@@ -3,11 +3,13 @@ import { AuthRepository } from './auth.repository';
 import { RegisterUserCommand } from '../models/auth.commands';
 import { OAuthService } from 'angular-oauth2-oidc';
 import { filter } from 'rxjs/operators';
+import { AccountContextService } from '@/app/core/services/account-context.service';
 
 @Injectable({ providedIn: 'root' })
 export class AuthFacade {
     private repo = inject(AuthRepository);
     private oauthService = inject(OAuthService);
+    private accountContext = inject(AccountContextService);
 
     private _isLoggedIn = signal<boolean>(false);
     readonly isLoggedIn = this._isLoggedIn.asReadonly();
@@ -19,13 +21,16 @@ export class AuthFacade {
         ).subscribe(event => {
             if (event.type === 'token_received' || event.type === 'token_refreshed') {
                 this._isLoggedIn.set(true);
+                this.accountContext.refreshFromToken();
             } else {
                 this._isLoggedIn.set(false);
+                this.accountContext.refreshFromToken();
             }
         });
 
         // Initial state
         this._isLoggedIn.set(this.oauthService.hasValidAccessToken());
+        this.accountContext.refreshFromToken();
     }
 
     // OAuth2 login (redirects to backend)
@@ -40,6 +45,7 @@ export class AuthFacade {
     logout() {
         this.oauthService.logOut();           // clears tokens
         this._isLoggedIn.set(false);
+        this.accountContext.resetAll();
     }
 
     checkAuthStatus(): boolean {

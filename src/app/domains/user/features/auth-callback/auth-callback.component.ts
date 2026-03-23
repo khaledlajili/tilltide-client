@@ -3,6 +3,7 @@ import { Router } from '@angular/router';
 import { OAuthService } from 'angular-oauth2-oidc';
 import { CommonModule } from '@angular/common';
 import { ProgressSpinnerModule } from 'primeng/progressspinner';
+import { AccountContextService } from '@/app/core/services/account-context.service';
 
 @Component({
     selector: 'app-auth-callback',
@@ -20,14 +21,20 @@ import { ProgressSpinnerModule } from 'primeng/progressspinner';
 export class AuthCallbackComponent implements OnInit {
     private oauthService = inject(OAuthService);
     private router = inject(Router);
+  private accountContext = inject(AccountContextService);
 
     ngOnInit() {
         this.oauthService.loadDiscoveryDocumentAndTryLogin().then(() => {
-            if (this.oauthService.hasValidAccessToken()) {
-                this.router.navigate(['/']);
+          if (this.oauthService.hasValidAccessToken()) {
+            this.accountContext.refreshFromToken();
+            if (this.accountContext.hasAccountContext()) {
+              this.router.navigate(['/']);
             } else {
-                this.router.navigate(['/user/login']);
+              this.router.navigate(['/account/list']);
             }
+          } else {
+            this.router.navigate(['/user/login']);
+          }
         }).catch(() => this.router.navigate(['/user/login']));
     }
 }

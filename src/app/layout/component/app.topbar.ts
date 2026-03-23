@@ -1,16 +1,16 @@
 // Edited file: src/app/layout/component/app.topbar.ts
-import { Component, inject, OnInit, signal, ViewChild } from '@angular/core';
-import { RouterModule } from '@angular/router';
+import { Component, effect, inject, OnInit, signal, ViewChild } from '@angular/core';
+import { Router, RouterModule } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { MenuItem } from 'primeng/api';
 import { Menu, MenuModule } from 'primeng/menu';
 import { ButtonModule } from 'primeng/button';
 import { StyleClassModule } from 'primeng/styleclass';
 import { LayoutService } from '@/app/layout/service/layout.service';
-import { AuthService } from '@/app/core/services/auth.service';
 import { TranslateService } from '@ngx-translate/core';
 import { AppLogo } from "@/app/layout/component/app-logo.component";
 import { AuthFacade } from '@/app/domains/user/data-access/auth.facade';
+import { AccountContextService } from '@/app/core/services/account-context.service';
 
 @Component({
     selector: 'app-topbar',
@@ -24,6 +24,8 @@ export class AppTopbar implements OnInit {
     layoutService = inject(LayoutService);
     authFacade = inject(AuthFacade);
     translate = inject(TranslateService);
+    accountContext = inject(AccountContextService);
+    router = inject(Router);
 
     userMenuItems: MenuItem[] | undefined;
     currentLang = signal('en'); // Initialize with default
@@ -34,23 +36,29 @@ export class AppTopbar implements OnInit {
         this.translate.use(savedLang);
         this.currentLang.set(savedLang);
 
-        this.userMenuItems = [
-            {
-                label: 'Account',
-                items: [
-                    {
-                        label: 'Edit Account',
-                        icon: 'pi pi-pencil',
-                        routerLink: ['/account/edit']
-                    },
-                    {
-                        label: 'Sign Out',
-                        icon: 'pi pi-power-off',
-                        command: () => this.onLogout()
-                    }
-                ]
-            }
-        ];
+        effect(() => {
+            const accountId = this.accountContext.accountId();
+            const accountName = this.accountContext.accountName();
+
+            this.userMenuItems = [
+                {
+                    label: accountName ? `Account: ${accountName}` : 'Account',
+                    items: [
+                        ...(accountId
+                            ? [{ label: 'Edit Account', icon: 'pi pi-pencil', routerLink: ['/account/edit', accountId] }]
+                            : [{ label: 'Select Account', icon: 'pi pi-briefcase', routerLink: ['/account/list'] }]),
+                        ...(accountId
+                            ? [{ label: 'Leave Account', icon: 'pi pi-sign-out', command: () => this.onLeaveAccount() }]
+                            : []),
+                        {
+                            label: 'Sign Out',
+                            icon: 'pi pi-power-off',
+                            command: () => this.onLogout()
+                        }
+                    ]
+                }
+            ];
+        });
     }
 
     // 2. Switcher Logic: Toggle and Save
@@ -76,5 +84,13 @@ export class AppTopbar implements OnInit {
             this.menu.hide();
         }
         this.authFacade.logout();
+    }
+
+    onLeaveAccount() {
+        if (this.menu) {
+            this.menu.hide();
+        }
+        this.accountContext.clearAccountContext();
+        this.router.navigate(['/account/list']);
     }
 }

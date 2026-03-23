@@ -22,6 +22,7 @@ export const appRoutes: Routes = [
         ]
     },
     { path: 'account', loadChildren: () => import('./app/domains/account/account.routes') },
+    { path: 'workspace', loadChildren: () => import('./app/domains/workspace/workspace.routes') },
     { path: 'notfound', component: Notfound },
     { path: 'user', loadChildren: () => import('@/app/domains/user/auth.routes') },
     { path: 'auth/callback', component: AuthCallbackComponent },
