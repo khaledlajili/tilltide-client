@@ -32,36 +32,12 @@ export class AppMenu {
             const items: MenuItem[] = [];
 
             if (hasAccount) {
-                items.push(
-                    {
-                        label: 'Transactions',
-                        items: [
-                            { label: 'List', icon: 'pi pi-fw pi-list', routerLink: ['/trading/list'] },
-                            { label: 'New Transaction', icon: 'pi pi-fw pi-plus-circle', routerLink: ['/trading'] }
-                        ]
-                    },
-                    {
-                        label: 'Catalog',
-                        items: [
-                            { label: 'Products', icon: 'pi pi-fw pi-box', routerLink: ['/catalog/product'] },
-                            { label: 'Categories', icon: 'pi pi-fw pi-tags', routerLink: ['/catalog/category'] },
-                            { label: 'Brands', icon: 'pi pi-fw pi-bookmark', routerLink: ['/catalog/brand'] }
-                        ]
-                    },
-                    {
-                        label: 'Parties',
-                        items: [
-                            { label: 'Parties', icon: 'pi pi-fw pi-users', routerLink: ['/party'] },
-                            { label: 'Terminals', icon: 'pi pi-fw pi-tablet', routerLink: ['/terminal'] }
-                        ]
-                    },
-                    {
-                        label: 'Workspaces',
-                        items: [
-                            { label: 'List', icon: 'pi pi-fw pi-objects-column', routerLink: ['/workspace/list'] }
-                        ]
-                    }
-                );
+                items.push({
+                    label: 'Workspaces',
+                    items: [
+                        { label: 'List', icon: 'pi pi-fw pi-objects-column', routerLink: ['/workspace/list'] }
+                    ]
+                });
             }
 
             items.push({

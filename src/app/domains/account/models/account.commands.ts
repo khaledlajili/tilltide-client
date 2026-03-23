@@ -1,9 +1,6 @@
 // Edited file: src/app/domains/account/models/account.commands.ts
 export interface CreateAccountCommand {
     accountName: string;
-    ownerEmail: string;
-    ownerPassword: string;
-    ownerFullName: string;
     billingEmail?: string;
     phoneNumber?: string;
     taxId?: string;

@@ -12,12 +12,13 @@ import { ToastModule } from 'primeng/toast';
 import { AccountContextService } from '@/app/core/services/account-context.service';
 import { AccountFacade } from '../../data-access/account.facade';
 import { AccountStore } from '../../data-access/account.store';
-import { AccountProfile } from '../../models/account.commands';
+import { AccountProfile, CreateAccountCommand } from '../../models/account.commands';
+import { CreateFormComponent } from '../../ui/create-form/create-form.component';
 
 @Component({
     selector: 'app-account-list',
     standalone: true,
-    imports: [CommonModule, DataViewModule, CardModule, ButtonModule, TagModule, RouterModule, ToastModule],
+    imports: [CommonModule, DataViewModule, CardModule, ButtonModule, TagModule, RouterModule, ToastModule, CreateFormComponent],
     providers: [MessageService],
     template: `
         <p-toast></p-toast>
@@ -30,7 +31,7 @@ import { AccountProfile } from '../../models/account.commands';
                             <h2 class="m-0 text-xl font-semibold">Select an account</h2>
                             <p class="m-0 text-sm text-muted-color">Choose an account to continue.</p>
                         </div>
-                        <p-button label="New Account" icon="pi pi-plus" routerLink="/account/register"></p-button>
+                        <p-button label="New Account" icon="pi pi-plus" (onClick)="openCreate()"></p-button>
                     </div>
                 </ng-template>
 
@@ -51,9 +52,18 @@ import { AccountProfile } from '../../models/account.commands';
 
                                 <div class="mt-4 flex flex-wrap gap-2">
                                     <p-button
+                                        *ngIf="accountContext.accountId() !== account.accountId"
                                         label="Select"
                                         icon="pi pi-check"
                                         (onClick)="onSelect(account)">
+                                    </p-button>
+
+                                    <p-button
+                                        *ngIf="accountContext.accountId() === account.accountId"
+                                        label="Leave"
+                                        icon="pi pi-sign-out"
+                                        severity="secondary"
+                                        (onClick)="onLeaveAccount()">
                                     </p-button>
 
                                     <p-button
@@ -76,6 +86,12 @@ import { AccountProfile } from '../../models/account.commands';
                 </ng-template>
             </p-dataView>
         </div>
+
+        <account-create-form
+            [(visible)]="createDialog"
+            [loading]="creating"
+            (save)="onCreate($event)">
+        </account-create-form>
     `
 })
 export class AccountListComponent implements OnInit {
@@ -84,6 +100,8 @@ export class AccountListComponent implements OnInit {
     accountContext = inject(AccountContextService);
     private messageService = inject(MessageService);
     private router = inject(Router);
+    createDialog = false;
+    creating = false;
 
     ngOnInit(): void {
         this.facade.loadAccounts().subscribe({
@@ -98,6 +116,10 @@ export class AccountListComponent implements OnInit {
         });
     }
 
+    openCreate(): void {
+        this.createDialog = true;
+    }
+
     onSelect(account: AccountProfile): void {
         this.accountContext.selectAccount(account.accountId, account.name).subscribe({
             next: () => this.router.navigate(['/workspace/list']),
@@ -106,6 +128,29 @@ export class AccountListComponent implements OnInit {
                     severity: 'error',
                     summary: 'Selection Failed',
                     detail: error?.error?.message || 'Unable to select account'
+                });
+            }
+        });
+    }
+
+    onLeaveAccount(): void {
+        this.accountContext.clearAccountContext();
+    }
+
+    onCreate(command: CreateAccountCommand): void {
+        this.creating = true;
+        this.facade.register(command).subscribe({
+            next: () => {
+                this.creating = false;
+                this.createDialog = false;
+                this.facade.loadAccounts().subscribe();
+            },
+            error: (error) => {
+                this.creating = false;
+                this.messageService.add({
+                    severity: 'error',
+                    summary: 'Create Failed',
+                    detail: error?.error?.message || 'Unable to create account'
                 });
             }
         });

@@ -23,9 +23,9 @@ export class EditComponent implements OnInit {
     protected store = inject(AccountStore);
     private messageService = inject(MessageService);
     private route = inject(ActivatedRoute);
+    private router = inject(Router);
 
     loading = false;
-    isEditing = false;
 
     ngOnInit() {
         // In a real app, get this ID from your AuthFacade or route params
@@ -43,6 +43,10 @@ export class EditComponent implements OnInit {
         }
     }
 
+    onCancel() {
+        this.router.navigate(['/account/list']);
+    }
+
     onUpdate(command: UpdateAccountCommand) {
         this.loading = true;
         this.accountFacade.update(command).subscribe({
@@ -52,7 +56,6 @@ export class EditComponent implements OnInit {
                     summary: 'Success',
                     detail: 'Account updated successfully!',
                 });
-                this.isEditing = false;
                 this.loading = false;
             },
             error: (err) => {
