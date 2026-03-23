@@ -24,7 +24,7 @@ export class AppMenu {
     model: MenuItem[] = [];
     private accountContext = inject(AccountContextService);
 
-    ngOnInit() {
+    constructor() {
         effect(() => {
             const accountId = this.accountContext.accountId();
             const hasAccount = !!accountId;

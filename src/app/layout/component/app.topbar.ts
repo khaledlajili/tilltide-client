@@ -27,15 +27,10 @@ export class AppTopbar implements OnInit {
     accountContext = inject(AccountContextService);
     router = inject(Router);
 
-    userMenuItems: MenuItem[] | undefined;
+    userMenuItems: MenuItem[] = [];
     currentLang = signal('en'); // Initialize with default
 
-    ngOnInit() {
-        // 1. Persistence Logic: Check localStorage on Init
-        const savedLang = localStorage.getItem('lang') || 'en';
-        this.translate.use(savedLang);
-        this.currentLang.set(savedLang);
-
+    constructor() {
         effect(() => {
             const accountId = this.accountContext.accountId();
             const accountName = this.accountContext.accountName();
@@ -59,6 +54,13 @@ export class AppTopbar implements OnInit {
                 }
             ];
         });
+    }
+
+    ngOnInit() {
+        // 1. Persistence Logic: Check localStorage on Init
+        const savedLang = localStorage.getItem('lang') || 'en';
+        this.translate.use(savedLang);
+        this.currentLang.set(savedLang);
     }
 
     // 2. Switcher Logic: Toggle and Save
