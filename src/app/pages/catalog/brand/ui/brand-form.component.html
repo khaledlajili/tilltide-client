@@ -1,0 +1,81 @@
+<p-dialog
+    [(visible)]="visible"
+    [style]="{ width: '450px' }"
+    header="Brand Details"
+    [modal]="true"
+    (onHide)="close()">
+
+    <ng-template #content>
+        <form [formGroup]="form" class="flex flex-col gap-6">
+
+            <div>
+                <label for="name" class="block font-bold mb-3">Name</label>
+                <input
+                    pInputText
+                    id="name"
+                    formControlName="name"
+                    placeholder="Enter brand name"
+                    class="w-full"
+                    [class.ng-invalid]="form.get('name')?.invalid && form.get('name')?.touched"
+                    [class.ng-dirty]="form.get('name')?.touched"
+                />
+                <small class="text-red-500" *ngIf="form.get('name')?.invalid && form.get('name')?.touched">
+                    Name is required (min 2 characters).
+                </small>
+            </div>
+
+            <div>
+                <label for="description" class="block font-bold mb-3">Description</label>
+                <textarea
+                    id="description"
+                    pTextarea
+                    formControlName="description"
+                    rows="3"
+                    class="w-full"
+                    placeholder="Optional description">
+                </textarea>
+            </div>
+
+            <div>
+                <label class="block font-bold mb-3">Brand Logo</label>
+                <div class="flex flex-col items-center justify-center border-2 border-dashed border-surface-200 dark:border-surface-700 p-6 rounded-lg">
+                    <p-fileUpload
+                        mode="basic"
+                        name="demo[]"
+                        chooseLabel="Select Logo"
+                        chooseIcon="pi pi-upload"
+                        accept="image/*"
+                        maxFileSize="1000000"
+                        (onSelect)="onUpload($event)"
+                        [auto]="true"
+                        styleClass="p-button-secondary">
+                    </p-fileUpload>
+
+                    <span class="text-muted-color mt-3 text-sm">Upload a PNG or JPG (Max 1MB)</span>
+                </div>
+
+                <div class="mt-4 flex gap-2" *ngIf="form.get('medias')?.value?.length > 0">
+                    <div class="text-sm font-medium text-primary">
+                        <i class="pi pi-check-circle"></i> Logo uploaded
+                    </div>
+                </div>
+            </div>
+        </form>
+    </ng-template>
+
+    <ng-template #footer>
+        <p-button
+            label="Cancel"
+            icon="pi pi-times"
+            [text]="true"
+            (onClick)="close()">
+        </p-button>
+        <p-button
+            label="Save Brand"
+            icon="pi pi-check"
+            [loading]="loading"
+            [disabled]="form.invalid"
+            (onClick)="submit()">
+        </p-button>
+    </ng-template>
+</p-dialog>

@@ -1,0 +1,54 @@
+<p-toast></p-toast>
+<p-confirmDialog></p-confirmDialog>
+
+<div class="card">
+    <p-toolbar styleClass="mb-6">
+        <ng-template #start>
+            <p-button [label]="'brand.new' | translate" icon="pi pi-plus" class="mr-2" (onClick)="openNew()"></p-button>
+            <p-button [label]="'brand.delete' | translate" icon="pi pi-trash" severity="danger" (onClick)="deleteSelected()"
+                      [disabled]="!selectedBrands || !selectedBrands.length"></p-button>
+        </ng-template>
+        <ng-template #end>
+            <p-button [label]="'brand.export' | translate" icon="pi pi-upload" severity="secondary" (onClick)="dt.exportCSV()"></p-button>
+        </ng-template>
+    </p-toolbar>
+
+    <p-table #dt [value]="brands()" [rows]="10" [paginator]="true" [globalFilterFields]="['name']"
+             [(selection)]="selectedBrands" dataKey="id" [loading]="loading()">
+        <ng-template #caption>
+            <div class="flex items-center justify-between">
+                <h5 class="m-0">{{ 'brand.manageBrands' | translate }}</h5>
+                <p-iconField>
+                    <p-inputIcon styleClass="pi pi-search"></p-inputIcon>
+                    <input pInputText type="text" (input)="onFilter($event)" [placeholder]="'brand.search' | translate" />
+                </p-iconField>
+            </div>
+        </ng-template>
+        <ng-template #header>
+            <tr>
+                <th style="width: 3rem"><p-tableHeaderCheckbox></p-tableHeaderCheckbox></th>
+                <th pSortableColumn="name">{{ 'brand.name' | translate }} <p-sortIcon field="name"></p-sortIcon></th>
+                <th>{{ 'brand.description' | translate }}</th>
+                <th style="width: 8rem">{{ 'brand.actions' | translate }}</th>
+            </tr>
+        </ng-template>
+        <ng-template #body let-brand>
+            <tr>
+                <td><p-tableCheckbox [value]="brand"></p-tableCheckbox></td>
+                <td>{{ brand.name }}</td>
+                <td>{{ brand.description }}</td>
+                <td>
+                    <p-button icon="pi pi-pencil" [rounded]="true" [outlined]="true" class="mr-2" (click)="edit(brand)"></p-button>
+                    <p-button icon="pi pi-trash" severity="danger" [rounded]="true" [outlined]="true" (click)="delete(brand)"></p-button>
+                </td>
+            </tr>
+        </ng-template>
+    </p-table>
+</div>
+
+<app-brand-form
+    [(visible)]="brandDialog"
+    [brand]="selectedBrand"
+    [loading]="isSaving"
+    (save)="onSave($event)">
+</app-brand-form>

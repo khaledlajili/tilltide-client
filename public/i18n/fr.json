@@ -1,0 +1,12 @@
+{
+    "brand": {
+        "new": "Nouveau",
+        "delete": "Supprimer",
+        "export": "Exporter",
+        "manageBrands": "Gérer les Marques",
+        "search": "Recherche...",
+        "name": "Nom",
+        "description": "Description",
+        "actions": "Actions"
+    }
+}

@@ -1,0 +1,40 @@
+<p-toast></p-toast>
+<p-confirmDialog></p-confirmDialog>
+
+<div class="card">
+    <p-toolbar styleClass="mb-6">
+        <ng-template #start>
+            <p-button label="New Category" icon="pi pi-plus" (onClick)="openNew()"></p-button>
+        </ng-template>
+    </p-toolbar>
+
+    <p-table #dt [value]="categories()" [rows]="10" [paginator]="true" [loading]="loading()">
+        <ng-template #header>
+            <tr>
+                <th pSortableColumn="name">Name <p-sortIcon field="name"></p-sortIcon></th>
+                <th>Parent</th>
+                <th>Description</th>
+                <th style="width: 8rem">Actions</th>
+            </tr>
+        </ng-template>
+        <ng-template #body let-category>
+            <tr>
+                <td>{{ category.name }}</td>
+                <td>{{ getParentName(category.parent) }}</td>
+                <td>{{ category.description }}</td>
+                <td>
+                    <p-button icon="pi pi-pencil" [text]="true" (click)="edit(category)"></p-button>
+                    <p-button icon="pi pi-trash" [text]="true" severity="danger" (click)="delete(category)"></p-button>
+                </td>
+            </tr>
+        </ng-template>
+    </p-table>
+</div>
+
+<app-category-form
+    [(visible)]="categoryDialog"
+    [category]="selectedCategory"
+    [categories]="categories()"
+    [loading]="isSaving"
+    (save)="onSave($event)">
+</app-category-form>

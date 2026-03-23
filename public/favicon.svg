@@ -1,0 +1,19 @@
+<svg viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="g1" gradientUnits="userSpaceOnUse" x1="13.8052" y1="35.3131" x2="29.465" y2="19.6533" gradientTransform="matrix(0.999 -0.0442 0.0442 0.999 -14.9085 -18.2135)">
+      <stop offset="0" stop-color="#004BBD"/>
+      <stop offset="0.5" stop-color="#86BEFF"/>
+      <stop offset="1" stop-color="#004BBD"/>
+    </linearGradient>
+
+    <linearGradient id="g2" gradientUnits="userSpaceOnUse" x1="-14.0335" y1="688.1217" x2="1.6262" y2="672.462" gradientTransform="matrix(0.9974 0.0726 0.0726 -0.9974 -35.2494 687.2354)">
+      <stop offset="0" stop-color="#004BBD"/>
+      <stop offset="0.5" stop-color="#86BEFF"/>
+      <stop offset="1" stop-color="#004BBD"/>
+    </linearGradient>
+  </defs>
+
+  <path fill="url(#g1)" d="M15.5,0.2l-2.6,0.1C11.3,0.4,10,1.4,9.5,2.8L7.8,7.3c-0.2,0.6-0.8,1-1.4,1L0,8.6l0.3,7.7l1.8-0.1 c1.5-0.1,2.9-1.1,3.4-2.5l1.6-4.5c0.2-0.6,0.8-1,1.4-1l7.3-0.3L15.5,0.2z"/>
+
+  <path fill="url(#g2)" d="M15.3,16.6l-2.6-0.2c-1.5-0.1-2.9-1.1-3.4-2.6L7.8,9.2c-0.2-0.6-0.7-1-1.4-1.1L0,7.7L0.6,0l1.8,0.1 c1.5,0.1,2.9,1.1,3.4,2.6l1.5,4.5c0.2,0.6,0.7,1,1.4,1.1l7.3,0.5L15.3,16.6z"/>
+</svg>

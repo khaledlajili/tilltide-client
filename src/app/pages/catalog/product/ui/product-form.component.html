@@ -1,0 +1,81 @@
+<p-dialog [(visible)]="visible" [style]="{ width: '80vw' }" header="Product Details" [modal]="true" (onHide)="close()">
+    <ng-template #content>
+        <form [formGroup]="form" class="grid grid-cols-12 gap-4">
+
+            <div class="col-span-12 md:col-span-6 flex flex-col gap-4">
+                <div>
+                    <label class="block font-bold mb-2">Name</label>
+                    <input pInputText formControlName="name" class="w-full" />
+                </div>
+                <div class="grid grid-cols-2 gap-2">
+                    <div>
+                        <label class="block font-bold mb-2">SKU</label>
+                        <input pInputText formControlName="sku" class="w-full" />
+                    </div>
+                    <div>
+                        <label class="block font-bold mb-2">Min Stock</label>
+                        <p-inputNumber formControlName="minStockLevel" class="w-full"></p-inputNumber>
+                    </div>
+                </div>
+                <div>
+                    <label class="block font-bold mb-2">Brand</label>
+                    <p-select [options]="brands" formControlName="brand" optionLabel="name" optionValue="id" placeholder="Select Brand" class="w-full"></p-select>
+                </div>
+                <div>
+                    <label class="block font-bold mb-2">Categories</label>
+                    <p-multiSelect [options]="categories" formControlName="categories" optionLabel="name" optionValue="id" placeholder="Select Categories" class="w-full"></p-multiSelect>
+                </div>
+            </div>
+
+            <div class="col-span-12 md:col-span-6">
+                <label class="block font-bold mb-2">Product Images</label>
+                <p-fileUpload mode="basic" (onSelect)="onUpload($event)" [auto]="true" chooseLabel="Add Image"></p-fileUpload>
+                <div class="mt-2 flex flex-wrap gap-2">
+                    <p-chip *ngFor="let mId of form.get('medias')?.value" [label]="'Image attached'" icon="pi pi-image"></p-chip>
+                </div>
+            </div>
+
+            <div class="col-span-12 mt-4">
+                <div class="flex justify-between items-center mb-2">
+                    <h5 class="font-bold">Product Units</h5>
+                    <p-button label="Add Unit" icon="pi pi-plus" size="small" (onClick)="addUnit()"></p-button>
+                </div>
+                <p-table [value]="unitControls.controls" styleClass="p-datatable-sm">
+                    <ng-template #header>
+                        <tr>
+                            <th>Unit Name</th>
+                            <th>Factor</th>
+                            <th>Base?</th>
+                            <th>Sale Price</th>
+                            <th>Action</th>
+                        </tr>
+                    </ng-template>
+                    <ng-template #header>
+                        <tr>
+                            <th>Unit Name</th>
+                            <th>Factor</th>
+                            <th>Purchase Price</th> <th>Base?</th>
+                            <th>Sale Price</th>
+                            <th>Action</th>
+                        </tr>
+                    </ng-template>
+                    <ng-template #body let-control let-i="rowIndex">
+                        <tr [formGroup]="control">
+                            <td><input pInputText formControlName="name" class="w-full" /></td>
+                            <td><p-inputNumber formControlName="conversionFactor" [min]="1"></p-inputNumber></td>
+                            <td><p-inputNumber formControlName="defaultPurchasePrice" mode="currency" currency="USD"></p-inputNumber></td>
+                            <td><p-checkbox formControlName="base" [binary]="true"></p-checkbox></td>
+                            <td><p-inputNumber formControlName="defaultSalePrice" mode="currency" currency="USD"></p-inputNumber></td>
+                            <td><p-button icon="pi pi-trash" severity="danger" [text]="true" (onClick)="removeUnit(i)"></p-button></td>
+                        </tr>
+                    </ng-template>151541
+                </p-table>
+            </div>
+        </form>
+    </ng-template>
+
+    <ng-template #footer>
+        <p-button label="Cancel" (onClick)="close()" [text]="true"></p-button>
+        <p-button label="Save Product" icon="pi pi-check" [loading]="loading" (onClick)="submit()"></p-button>
+    </ng-template>
+</p-dialog>

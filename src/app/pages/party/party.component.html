@@ -1,0 +1,43 @@
+<p-toast></p-toast>
+<p-confirmDialog></p-confirmDialog>
+
+<div class="card">
+    <p-toolbar styleClass="mb-6">
+        <ng-template #start>
+            <p-button label="New Party" icon="pi pi-plus" (onClick)="openNew()"></p-button>
+        </ng-template>
+    </p-toolbar>
+
+    <p-table [value]="facade.parties()" [rows]="10" [paginator]="true" [loading]="facade.loading()">
+        <ng-template #header>
+            <tr>
+                <th>Name</th>
+                <th>Types</th>
+                <th>Tax ID</th>
+                <th>Balance</th>
+                <th style="width: 8rem"></th>
+            </tr>
+        </ng-template>
+        <ng-template #body let-party>
+            <tr>
+                <td>{{ party.name }}</td>
+                <td>
+                    <p-tag *ngFor="let type of party.types" [value]="type" class="mr-1"></p-tag>
+                </td>
+                <td>{{ party.taxId }}</td>
+                <td>{{ party.currentBalance | currency }}</td>
+                <td>
+                    <p-button icon="pi pi-pencil" [text]="true" (click)="edit(party)"></p-button>
+                    <p-button icon="pi pi-trash" [text]="true" severity="danger" (click)="delete(party)"></p-button>
+                </td>
+            </tr>
+        </ng-template>
+    </p-table>
+</div>
+
+<app-party-form
+    [(visible)]="partyDialog"
+    [party]="selectedParty"
+    [loading]="isSaving"
+    (save)="onSave($event)">
+</app-party-form>

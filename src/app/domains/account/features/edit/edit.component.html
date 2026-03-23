@@ -1,0 +1,45 @@
+<p-toast />
+
+<div class="card flex justify-content-center">
+    <p-card header="Account Settings" subheader="Manage company details" styleClass="w-full lg:w-9">
+
+        <div *ngIf="!isEditing" class="p-4">
+            <div class="grid p-fluid">
+                <div class="col-12 md:col-6 mb-3">
+                    <label class="font-bold block mb-1">Company Name</label>
+                    <div class="p-3 border-round surface-100">{{ store.profile()?.name || 'N/A' }}</div>
+                </div>
+                <div class="col-12 md:col-6 mb-3">
+                    <label class="font-bold block mb-1">Billing Email</label>
+                    <div class="p-3 border-round surface-100">{{ store.profile()?.billingEmail || 'N/A' }}</div>
+                </div>
+                <div class="col-12 md:col-6 mb-3">
+                    <label class="font-bold block mb-1">Phone</label>
+                    <div class="p-3 border-round surface-100">{{ store.profile()?.phoneNumber || 'N/A' }}</div>
+                </div>
+                <div class="col-12 md:col-6 mb-3">
+                    <label class="font-bold block mb-1">Tax ID</label>
+                    <div class="p-3 border-round surface-100">{{ store.profile()?.taxId || 'N/A' }}</div>
+                </div>
+                <div class="col-12">
+                    <label class="font-bold block mb-1">Address</label>
+                    <div class="p-3 border-round surface-100">
+                        {{ store.profile()?.addressStreet }}, {{ store.profile()?.addressCity }} <br>
+                        {{ store.profile()?.addressState }} {{ store.profile()?.addressPostalCode }}
+                    </div>
+                </div>
+            </div>
+
+            <div class="flex justify-content-end mt-4">
+                <p-button label="Edit Profile" icon="pi pi-user-edit" (onClick)="isEditing = true"></p-button>
+            </div>
+        </div>
+
+        <account-edit-form
+            *ngIf="isEditing"
+            [loading]="loading"
+            (update)="onUpdate($event)"
+            (cancel)="isEditing = false"
+        />
+    </p-card>
+</div>

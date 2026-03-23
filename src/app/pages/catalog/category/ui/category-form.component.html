@@ -1,0 +1,76 @@
+<p-dialog
+    [(visible)]="visible"
+    [style]="{ width: '450px' }"
+    header="Category Details"
+    [modal]="true"
+    (onHide)="close()">
+
+    <ng-template #content>
+        <form [formGroup]="form" class="flex flex-col gap-6">
+
+            <div>
+                <label for="name" class="block font-bold mb-3">Name</label>
+                <input
+                    pInputText
+                    id="name"
+                    formControlName="name"
+                    class="w-full"
+                    [class.ng-invalid]="form.get('name')?.invalid && form.get('name')?.touched"
+                    [class.ng-dirty]="form.get('name')?.touched"
+                />
+                <small class="text-red-500" *ngIf="form.get('name')?.invalid && form.get('name')?.touched">
+                    Name is required (min 3 characters).
+                </small>
+            </div>
+
+            <div>
+                <label for="parent" class="block font-bold mb-3">Parent Category</label>
+                <p-select
+                    [options]="availableParents"
+                    formControlName="parent"
+                    optionLabel="name"
+                    optionValue="id"
+                    [showClear]="true"
+                    placeholder="Select a Parent"
+                    styleClass="w-full"
+                    appendDefaultHref="false">
+                </p-select>
+            </div>
+
+            <div>
+                <label for="description" class="block font-bold mb-3">Description</label>
+                <textarea
+                    id="description"
+                    pTextarea
+                    formControlName="description"
+                    rows="3"
+                    class="w-full">
+                </textarea>
+            </div>
+
+            <div>
+                <label class="block font-bold mb-3">Category Image</label>
+                <div class="flex flex-col items-center justify-center border-2 border-dashed border-surface-200 dark:border-surface-700 p-6 rounded-lg">
+                    <p-fileUpload
+                        mode="basic"
+                        (onSelect)="onUpload($event)"
+                        [auto]="true"
+                        chooseLabel="Upload Image"
+                        chooseIcon="pi pi-upload"
+                        styleClass="p-button-secondary">
+                    </p-fileUpload>
+                </div>
+                <div class="mt-4 flex gap-2" *ngIf="form.get('medias')?.value?.length > 0">
+                    <div class="text-sm font-medium text-primary">
+                        <i class="pi pi-check-circle"></i> Image attached
+                    </div>
+                </div>
+            </div>
+        </form>
+    </ng-template>
+
+    <ng-template #footer>
+        <p-button label="Cancel" icon="pi pi-times" [text]="true" (onClick)="close()"></p-button>
+        <p-button label="Save Category" icon="pi pi-check" [loading]="loading" [disabled]="form.invalid" (onClick)="submit()"></p-button>
+    </ng-template>
+</p-dialog>

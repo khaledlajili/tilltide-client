@@ -1,0 +1,41 @@
+<p-dialog [(visible)]="visible" [style]="{ width: '500px' }" header="Party Details" [modal]="true" (onHide)="close()">
+    <ng-template #content>
+        <form [formGroup]="form" class="flex flex-col gap-4">
+            <div>
+                <label class="block font-bold mb-2">Name</label>
+                <input pInputText formControlName="name" class="w-full" />
+            </div>
+
+            <div>
+                <label class="block font-bold mb-2">Party Types</label>
+                <p-multiSelect
+                    [options]="partyTypeOptions"
+                    formControlName="types"
+                    placeholder="Select Types"
+                    class="w-full">
+                </p-multiSelect>
+            </div>
+
+            <div class="grid grid-cols-2 gap-4">
+                <div>
+                    <label class="block font-bold mb-2">Tax ID</label>
+                    <input pInputText formControlName="taxId" class="w-full" />
+                </div>
+                <div>
+                    <label class="block font-bold mb-2">Balance</label>
+                    <p-inputNumber formControlName="currentBalance" mode="currency" currency="USD" class="w-full"></p-inputNumber>
+                </div>
+            </div>
+
+            <div>
+                <label class="block font-bold mb-2">Address</label>
+                <textarea pTextarea formControlName="address" rows="2" class="w-full"></textarea>
+            </div>
+        </form>
+    </ng-template>
+
+    <ng-template #footer>
+        <p-button label="Cancel" [text]="true" (onClick)="close()"></p-button>
+        <p-button label="Save Party" icon="pi pi-check" [loading]="loading" (onClick)="submit()"></p-button>
+    </ng-template>
+</p-dialog>

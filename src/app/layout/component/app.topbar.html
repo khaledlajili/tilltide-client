@@ -1,0 +1,36 @@
+<!-- Edited file: src/app/layout/component/app.topbar.html -->
+<div class="layout-topbar">
+    <div class="layout-topbar-logo-container">
+        <button class="layout-menu-button layout-topbar-action" (click)="layoutService.onMenuToggle()">
+            <i class="pi pi-bars"></i>
+        </button>
+        <app-logo size="small" />
+    </div>
+
+    <div class="layout-topbar-actions">
+        <div class="layout-config-menu flex items-center gap-1">
+            <button type="button" class="layout-topbar-action" (click)="toggleDarkMode()">
+                <i [ngClass]="{ 'pi ': true, 'pi-moon': layoutService.isDarkTheme(), 'pi-sun': !layoutService.isDarkTheme() }"></i>
+            </button>
+
+            <button type="button" class="layout-topbar-action px-2 font-bold text-sm" (click)="changeLang()">
+                {{ currentLang() | uppercase }}
+            </button>
+        </div>
+
+        <button class="layout-topbar-menu-button layout-topbar-action" pStyleClass="@next" enterFromClass="hidden" enterActiveClass="animate-scalein" leaveToClass="hidden" leaveActiveClass="animate-fadeout" [hideOnOutsideClick]="true">
+            <i class="pi pi-ellipsis-v"></i>
+        </button>
+
+        <div class="layout-topbar-menu hidden lg:block">
+            <div class="layout-topbar-menu-content">
+                <p-menu #menu [model]="userMenuItems" [popup]="true"></p-menu>
+
+                <button type="button" class="layout-topbar-action" (click)="menu.toggle($event)">
+                    <i class="pi pi-user"></i>
+                    <span>Profile</span>
+                </button>
+            </div>
+        </div>
+    </div>
+</div>

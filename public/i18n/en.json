@@ -1,0 +1,12 @@
+{
+    "brand": {
+        "new": "New",
+        "delete": "Delete",
+        "export": "Export",
+        "manageBrands": "Manage Brands",
+        "search": "Search...",
+        "name": "Name",
+        "description": "Description",
+        "actions": "Actions"
+    }
+}

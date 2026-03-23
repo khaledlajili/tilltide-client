@@ -1,0 +1,46 @@
+<div class="card">
+    <p-toolbar styleClass="mb-4">
+        <ng-template #start>
+            <p-button label="New Transaction" icon="pi pi-plus" (onClick)="createNew()"></p-button>
+        </ng-template>
+    </p-toolbar>
+
+    <p-table [value]="documents()" [rows]="10" [paginator]="true" [loading]="loading()"
+             sortField="issueDate" [sortOrder]="-1">
+        <ng-template #header>
+            <tr>
+                <th pSortableColumn="docNumber">Number <p-sortIcon field="docNumber"></p-sortIcon></th>
+                <th pSortableColumn="issueDate">Date <p-sortIcon field="issueDate"></p-sortIcon></th>
+                <th>Type</th>
+                <th>Party</th>
+                <th>Total</th>
+                <th>Status</th>
+                <th style="width: 10rem">Actions</th>
+            </tr>
+        </ng-template>
+        <ng-template #body let-doc>
+            <tr>
+                <td>{{ doc.docNumber }}</td>
+                <td>{{ doc.issueDate | date:'short' }}</td>
+                <td><p-tag [value]="doc.type" [severity]="getTypeSeverity(doc.type)"></p-tag></td>
+                <td>{{ getPartyName(doc.partyId) }}</td>
+                <td class="font-bold">{{ doc.totalAmount | number:'1.2-2' }}</td>
+                <td><p-tag [value]="doc.status" [severity]="getStatusSeverity(doc.status)"></p-tag></td>
+                <td>
+                    <p-button icon="pi pi-file-pdf" [rounded]="true" [text]="true" severity="danger"
+                              pTooltip="Download PDF" (onClick)="downloadPdf(doc)"
+                              [disabled]="!doc.medias || doc.medias.length === 0"></p-button>
+                    @if (doc.type.includes('ORDER') && doc.status === 'OPEN') {
+                        <p-button icon="pi pi-check-square" [rounded]="true" [text]="true"
+                                  pTooltip="Fulfill Order" (onClick)="fulfill(doc)"></p-button>
+                    }
+
+                    @if ((doc.type === 'SALE' || doc.type === 'PURCHASE') && doc.status === 'OPEN') {
+                        <p-button icon="pi pi-replay" [rounded]="true" [text]="true" severity="warn"
+                                  pTooltip="Create Return" (onClick)="createReturn(doc)"></p-button>
+                    }
+                </td>
+            </tr>
+        </ng-template>
+    </p-table>
+</div>

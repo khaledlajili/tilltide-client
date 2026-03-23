@@ -1,0 +1,57 @@
+<p-toast />
+<div class="bg-surface-50 dark:bg-surface-950 flex items-center justify-center min-h-screen min-w-screen overflow-hidden">
+    <div class="flex flex-col items-center justify-center">
+        <div style="border-radius: 56px; padding: 0.3rem; background: linear-gradient(180deg, var(--primary-color) 10%, rgba(33, 150, 243, 0) 30%)">
+            <div class="w-full bg-surface-0 dark:bg-surface-900 py-10 px-8 sm:px-12" style="border-radius: 53px">
+
+                <div class="text-center mb-6">
+                    <div class="mx-auto bg-primary-50 dark:bg-primary-900/20 w-16 h-16 rounded-full flex items-center justify-center mb-4">
+                        <i class="pi pi-lock text-2xl text-primary"></i>
+                    </div>
+                    <div class="text-surface-900 dark:text-surface-0 text-2xl font-medium mb-2">Terminal Locked</div>
+                    <span class="text-muted-color">Enter PIN to resume session</span>
+                </div>
+
+                <div class="flex justify-center gap-3 mb-8">
+                    <div *ngFor="let dot of [1,2,3,4]"
+                         [class.bg-primary]="pin().length >= dot"
+                         [class.border-primary]="pin().length >= dot"
+                         class="w-4 h-4 rounded-full border-2 border-surface-300 dark:border-surface-600 transition-colors duration-200">
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-3 gap-4 mb-4">
+                    <button *ngFor="let num of [1,2,3,4,5,6,7,8,9]"
+                            pButton
+                            class="p-button-text p-button-rounded p-button-lg text-xl font-semibold !w-16 !h-16"
+                            (click)="addDigit(num.toString())">
+                        {{num}}
+                    </button>
+
+                    <div class="flex items-center justify-center">
+                        <button pButton icon="pi pi-sign-out"
+                                class="p-button-danger p-button-text p-button-rounded"
+                                pTooltip="Logout"
+                                (click)="logout()"></button>
+                    </div>
+
+                    <button pButton
+                            class="p-button-text p-button-rounded p-button-lg text-xl font-semibold !w-16 !h-16"
+                            (click)="addDigit('0')">
+                        0
+                    </button>
+
+                    <div class="flex items-center justify-center">
+                        <button pButton icon="pi pi-backspace"
+                                class="p-button-secondary p-button-text p-button-rounded"
+                                (click)="backspace()"></button>
+                    </div>
+                </div>
+
+                <div *ngIf="loading" class="text-center">
+                    <i class="pi pi-spin pi-spinner text-primary"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,102 @@
+<div class="pos-wrapper">
+    <div class="catalog-panel">
+        <div class="filter-header">
+            <input pInputText placeholder="Search..." (input)="searchQuery.set($any($event.target).value)" class="w-full mb-2"/>
+            <div class="flex gap-2">
+                <p-select [options]="facade.brandStore.entities()" [(ngModel)]="selectedBrand"
+                          optionLabel="name" optionValue="id" placeholder="Brand" [showClear]="true" class="flex-1"></p-select>
+                <p-select [options]="facade.categoryStore.entities()" [(ngModel)]="selectedCategory"
+                          optionLabel="name" optionValue="id" placeholder="Category" [showClear]="true" class="flex-1"></p-select>
+            </div>
+        </div>
+
+        <div class="product-grid">
+            @for (product of filteredProducts(); track product.id) {
+                <div class="product-card" (click)="onProductClick(product)">
+                    <div class="image-container">
+                        <img [src]="product.medias[0]?.url || 'assets/img/placeholder.png'"
+                             [alt]="product.name"
+                             onerror="this.src='assets/img/placeholder.png'"/>
+                    </div>
+                    <div class="info">
+                        <span class="name">{{product.name}}</span>
+                        <span class="price">{{product.units[0]?.defaultSalePrice | number:'1.2-2'}}</span>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+
+    <div class="document-panel">
+        @if (linkedSourceId()) {
+            <div class="bg-blue-100 border-blue-500 border-l-4 p-3 mb-3 text-blue-700">
+                <i class="pi pi-link mr-2"></i>
+                Linked to Source Document
+            </div>
+        }
+
+        <p-selectButton [options]="docTypes"
+                        [ngModel]="facade.activeDocument().type"
+                        (ngModelChange)="facade.updateDocument({type: $event})"
+                        class="w-full mb-3"></p-selectButton>
+
+        <p-select [options]="facade.filteredParties()"
+                  [(ngModel)]="selectedParty"
+                  (ngModelChange)="onPartyChange($event)"
+                  optionLabel="name"
+                  placeholder="Select Party..."
+                  [filter]="true"
+                  filterBy="name"
+                  class="w-full mb-4"
+                  [style]="{'width':'100%'}">
+        </p-select>
+
+        <div class="line-items">
+            <p-table [value]="facade.activeDocument().lines" scrollable="true" scrollHeight="flex">
+                <ng-template pTemplate="header">
+                    <tr>
+                        <th>Product</th>
+                        <th>Unit</th>
+                        <th>Qty</th>
+                        <th>Price</th>
+                        <th></th>
+                    </tr>
+                </ng-template>
+                <ng-template pTemplate="body" let-line let-idx="rowIndex">
+                    <tr>
+                        <td class="truncate">{{line.productNameSnapshot}}</td>
+                        <td>
+                            <span class="text-sm border-1 p-1 border-round">{{line.unitNameSnapshot}}</span>
+                        </td>
+                        <td>
+                            <p-inputNumber [(ngModel)]="line.quantity"
+                                           (ngModelChange)="facade.updateLine(idx, {quantity: $event})"
+                                           [showButtons]="true" buttonLayout="horizontal"
+                                           inputStyleClass="w-3rem text-center"
+                                           decrementButtonIcon="pi pi-minus" incrementButtonIcon="pi pi-plus"></p-inputNumber>
+                        </td>
+                        <td>
+                            <p-inputNumber [(ngModel)]="line.unitPrice"
+                                           (ngModelChange)="facade.updateLine(idx, {unitPrice: $event})"
+                                           mode="decimal" [minFractionDigits]="2"
+                                           inputStyleClass="w-5rem"></p-inputNumber>
+                        </td>
+                        <td>
+                            <p-button icon="pi pi-times" severity="danger" [text]="true" (click)="facade.removeLine(idx)"></p-button>
+                        </td>
+                    </tr>
+                </ng-template>
+            </p-table>
+        </div>
+
+        <div class="footer-summary">
+            <div class="flex justify-content-between text-2xl font-bold mb-3">
+                <span>Total</span>
+                <span>{{facade.totalAmount() | number:'1.2-2'}}</span>
+            </div>
+            <p-button label="SUBMIT DOCUMENT" icon="pi pi-check" severity="success"
+                      class="w-full p-button-lg" [disabled]="!facade.activeDocument().partyId"
+                      (click)="save()"></p-button>
+        </div>
+    </div>
+</div>
