@@ -31,7 +31,7 @@ export class AccountContextService {
     }
 
     refreshFromToken() {
-        const token = this.oauthService.getAccessToken();
+        const token = this.getActiveAccessToken();
         const payload = parseJwtPayload(token);
         const accountId = payload?.['account_id'];
 
@@ -59,7 +59,7 @@ export class AccountContextService {
         const params = new HttpParams({
             fromObject: {
                 grant_type: ACCOUNT_GRANT,
-                client_id: authConfig.clientId,
+                client_id: authConfig.clientId ?? 'tilltide-pwa',
                 subject_token: subjectToken,
                 subject_token_type: SUBJECT_TOKEN_TYPE,
                 account_id: accountId
@@ -83,22 +83,6 @@ export class AccountContextService {
     }
 
     clearAccountContext() {
-        const storedUserToken = localStorage.getItem('user_access_token');
-        const storedUserExpiresAt = localStorage.getItem('user_expires_at');
-        const storedUserTokenType = localStorage.getItem('user_token_type');
-
-        if (storedUserToken) {
-            this.oauthService.storage.setItem('access_token', storedUserToken);
-            if (storedUserExpiresAt) {
-                this.oauthService.storage.setItem('expires_at', storedUserExpiresAt);
-            }
-            if (storedUserTokenType) {
-                this.oauthService.storage.setItem('token_type', storedUserTokenType);
-            }
-        } else {
-            this.oauthService.logOut();
-        }
-
         localStorage.removeItem('account_access_token');
         localStorage.removeItem('account_id');
         localStorage.removeItem('account_name');
@@ -127,26 +111,10 @@ export class AccountContextService {
 
         if (!localStorage.getItem('user_access_token')) {
             localStorage.setItem('user_access_token', subjectToken);
-            const expiresAt = this.oauthService.storage.getItem('expires_at');
-            const tokenType = this.oauthService.storage.getItem('token_type');
-            if (expiresAt) {
-                localStorage.setItem('user_expires_at', expiresAt);
-            }
-            if (tokenType) {
-                localStorage.setItem('user_token_type', tokenType);
-            }
         }
     }
 
     private storeAccountToken(response: AccountTokenResponse) {
-        const expiresAt = Date.now() + (response.expires_in * 1000);
-        this.oauthService.storage.setItem('access_token', response.access_token);
-        this.oauthService.storage.setItem('expires_at', String(expiresAt));
-        this.oauthService.storage.setItem('token_type', response.token_type ?? 'Bearer');
-        if (response.scope) {
-            this.oauthService.storage.setItem('scope', response.scope);
-        }
-
         localStorage.setItem('account_access_token', response.access_token);
     }
 
@@ -155,6 +123,10 @@ export class AccountContextService {
         localStorage.setItem('account_name', accountName);
         this.accountId.set(accountId);
         this.accountName.set(accountName);
+    }
+
+    private getActiveAccessToken(): string | null {
+        return localStorage.getItem('account_access_token') || this.oauthService.getAccessToken();
     }
 
 }

@@ -9,7 +9,7 @@ export interface WorkspaceState {
 export const WorkspaceStore = signalStore(
     { providedIn: 'root' },
     withState<WorkspaceState>({ workspaces: [], loading: false }),
-    withMethods((store: { workspaces: () => WorkspaceProfile[]; loading: () => boolean }) => ({
+    withMethods((store: any) => ({
         setWorkspaces: (workspaces: WorkspaceProfile[]) => patchState(store, { workspaces }),
         setLoading: (loading: boolean) => patchState(store, { loading })
     }))

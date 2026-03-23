@@ -12,7 +12,7 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
     const authFacade = inject(AuthFacade);
     const router = inject(Router);
 
-    const token = oauthService.getAccessToken();
+    const token = localStorage.getItem('account_access_token') || oauthService.getAccessToken();
     let headers = req.headers;
     if (token) {
         headers = headers.set('Authorization', `Bearer ${token}`);
