@@ -12,7 +12,7 @@ import { ToastModule } from 'primeng/toast';
 import { AccountContextService } from '@/app/core/services/account-context.service';
 import { AccountFacade } from '../../data-access/account.facade';
 import { AccountStore } from '../../data-access/account.store';
-import { AccountProfile, CreateAccountCommand } from '../../models/account.commands';
+import { AccountProfile, CreateAccountCommand, UpdateAccountCommand } from '../../models/account.commands';
 import { CreateFormComponent } from '../../ui/create-form/create-form.component';
 
 @Component({
@@ -70,8 +70,8 @@ import { CreateFormComponent } from '../../ui/create-form/create-form.component'
                                         label="Edit"
                                         icon="pi pi-pencil"
                                         [text]="true"
-                                        [routerLink]="['/account/edit', account.accountId]"
-                                        [disabled]="accountContext.accountId() !== account.accountId">
+                                        [disabled]="accountContext.accountId() !== account.accountId"
+                                        (onClick)="openEdit(account)">
                                     </p-button>
                                 </div>
                             </p-card>
@@ -90,7 +90,16 @@ import { CreateFormComponent } from '../../ui/create-form/create-form.component'
         <account-create-form
             [(visible)]="createDialog"
             [loading]="creating"
+            mode="create"
             (save)="onCreate($event)">
+        </account-create-form>
+
+        <account-create-form
+            [(visible)]="editDialog"
+            [loading]="editing"
+            mode="edit"
+            [account]="selectedAccount"
+            (save)="onEdit($event)">
         </account-create-form>
     `
 })
@@ -102,6 +111,9 @@ export class AccountListComponent implements OnInit {
     private router = inject(Router);
     createDialog = false;
     creating = false;
+    editDialog = false;
+    editing = false;
+    selectedAccount: AccountProfile | null = null;
 
     ngOnInit(): void {
         this.facade.loadAccounts().subscribe({
@@ -118,6 +130,11 @@ export class AccountListComponent implements OnInit {
 
     openCreate(): void {
         this.createDialog = true;
+    }
+
+    openEdit(account: AccountProfile): void {
+        this.selectedAccount = account;
+        this.editDialog = true;
     }
 
     onSelect(account: AccountProfile): void {
@@ -151,6 +168,29 @@ export class AccountListComponent implements OnInit {
                     severity: 'error',
                     summary: 'Create Failed',
                     detail: error?.error?.message || 'Unable to create account'
+                });
+            }
+        });
+    }
+
+    onEdit(command: CreateAccountCommand | UpdateAccountCommand): void {
+        if (!('accountId' in command)) {
+            return;
+        }
+
+        this.editing = true;
+        this.facade.update(command).subscribe({
+            next: () => {
+                this.editing = false;
+                this.editDialog = false;
+                this.facade.loadAccounts().subscribe();
+            },
+            error: (error) => {
+                this.editing = false;
+                this.messageService.add({
+                    severity: 'error',
+                    summary: 'Update Failed',
+                    detail: error?.error?.message || 'Unable to update account'
                 });
             }
         });

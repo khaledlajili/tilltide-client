@@ -1,15 +1,10 @@
 <p-toast />
 
-<div class="card">
-    <p-card header="Edit Account" subheader="Update company details" styleClass="w-full lg:w-8">
-        <div class="mb-4 text-sm text-muted-color">
-            Keep your billing and contact details up to date.
-        </div>
-
-        <account-edit-form
-            [loading]="loading"
-            (update)="onUpdate($event)"
-            (cancel)="onCancel()"
-        />
-    </p-card>
-</div>
+<account-create-form
+    [(visible)]="visible"
+    mode="edit"
+    [loading]="loading"
+    [account]="account"
+    (save)="onUpdate($event)"
+    (visibleChange)="onCancel()">
+</account-create-form>

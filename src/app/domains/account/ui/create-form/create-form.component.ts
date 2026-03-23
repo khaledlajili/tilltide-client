@@ -1,10 +1,10 @@
-import { Component, EventEmitter, Input, Output, inject } from '@angular/core';
+import { Component, EventEmitter, Input, OnChanges, Output, SimpleChanges, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { DialogModule } from 'primeng/dialog';
 import { InputTextModule } from 'primeng/inputtext';
 import { ButtonModule } from 'primeng/button';
-import { CreateAccountCommand } from '../../models/account.commands';
+import { AccountProfile, CreateAccountCommand, UpdateAccountCommand } from '../../models/account.commands';
 
 @Component({
     selector: 'account-create-form',
@@ -15,7 +15,7 @@ import { CreateAccountCommand } from '../../models/account.commands';
             [(visible)]="visible"
             [modal]="true"
             [style]="{ width: '640px' }"
-            header="New Account"
+            [header]="mode === 'edit' ? 'Edit Account' : 'New Account'"
             (onHide)="close()">
             <ng-template #content>
                 <form [formGroup]="form" class="grid grid-cols-12 gap-4">
@@ -64,20 +64,28 @@ import { CreateAccountCommand } from '../../models/account.commands';
 
             <ng-template #footer>
                 <p-button label="Cancel" [text]="true" (onClick)="close()"></p-button>
-                <p-button label="Create" icon="pi pi-check" [loading]="loading" (onClick)="submit()"></p-button>
+                <p-button
+                    [label]="mode === 'edit' ? 'Save Changes' : 'Create'"
+                    icon="pi pi-check"
+                    [loading]="loading"
+                    (onClick)="submit()">
+                </p-button>
             </ng-template>
         </p-dialog>
     `
 })
-export class CreateFormComponent {
+export class CreateFormComponent implements OnChanges {
     @Input() visible = false;
     @Input() loading = false;
+    @Input() mode: 'create' | 'edit' = 'create';
+    @Input() account: AccountProfile | null = null;
     @Output() visibleChange = new EventEmitter<boolean>();
-    @Output() save = new EventEmitter<CreateAccountCommand>();
+    @Output() save = new EventEmitter<CreateAccountCommand | UpdateAccountCommand>();
 
     private fb = inject(FormBuilder);
 
     form: FormGroup = this.fb.group({
+        accountId: [''],
         accountName: ['', [Validators.required, Validators.minLength(2)]],
         billingEmail: ['', [Validators.email]],
         phoneNumber: [''],
@@ -89,9 +97,63 @@ export class CreateFormComponent {
         addressCountry: ['']
     });
 
+    ngOnChanges(changes: SimpleChanges) {
+        if (changes['account'] && this.account) {
+            this.form.patchValue({
+                accountId: this.account.accountId,
+                accountName: this.account.name,
+                billingEmail: this.account.billingEmail,
+                phoneNumber: this.account.phoneNumber,
+                taxId: this.account.taxId,
+                addressStreet: this.account.addressStreet,
+                addressCity: this.account.addressCity,
+                addressState: this.account.addressState,
+                addressPostalCode: this.account.addressPostalCode,
+                addressCountry: this.account.addressCountry
+            });
+        }
+
+        if (changes['mode']) {
+            const accountIdControl = this.form.get('accountId');
+            if (this.mode === 'edit') {
+                accountIdControl?.setValidators([Validators.required]);
+            } else {
+                accountIdControl?.clearValidators();
+            }
+            accountIdControl?.updateValueAndValidity({ emitEvent: false });
+        }
+    }
+
     submit() {
         if (this.form.valid) {
-            this.save.emit(this.form.value);
+            if (this.mode === 'edit') {
+                const command: UpdateAccountCommand = {
+                    accountId: this.form.value.accountId,
+                    name: this.form.value.accountName,
+                    billingEmail: this.form.value.billingEmail,
+                    phoneNumber: this.form.value.phoneNumber,
+                    taxId: this.form.value.taxId,
+                    addressStreet: this.form.value.addressStreet,
+                    addressCity: this.form.value.addressCity,
+                    addressState: this.form.value.addressState,
+                    addressPostalCode: this.form.value.addressPostalCode,
+                    addressCountry: this.form.value.addressCountry
+                };
+                this.save.emit(command);
+            } else {
+                const command: CreateAccountCommand = {
+                    accountName: this.form.value.accountName,
+                    billingEmail: this.form.value.billingEmail,
+                    phoneNumber: this.form.value.phoneNumber,
+                    taxId: this.form.value.taxId,
+                    addressStreet: this.form.value.addressStreet,
+                    addressCity: this.form.value.addressCity,
+                    addressState: this.form.value.addressState,
+                    addressPostalCode: this.form.value.addressPostalCode,
+                    addressCountry: this.form.value.addressCountry
+                };
+                this.save.emit(command);
+            }
         }
     }
 

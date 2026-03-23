@@ -2,19 +2,17 @@
 import { Component, inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
-import { ButtonModule } from 'primeng/button';
 import { ToastModule } from 'primeng/toast';
-import { CardModule } from 'primeng/card';
 import { MessageService } from 'primeng/api';
 import { AccountFacade } from '../../data-access/account.facade';
-import { EditFormComponent } from '../../ui/edit-form/edit-form.component';
-import { UpdateAccountCommand } from '../../models/account.commands';
+import { CreateFormComponent } from '../../ui/create-form/create-form.component';
+import { AccountProfile, CreateAccountCommand, UpdateAccountCommand } from '../../models/account.commands';
 import { AccountStore } from '../../data-access/account.store';
 
 @Component({
     selector: 'app-account-edit',
     standalone: true,
-    imports: [CommonModule, ButtonModule, ToastModule, CardModule, EditFormComponent],
+    imports: [CommonModule, ToastModule, CreateFormComponent],
     providers: [MessageService],
     templateUrl: './edit.component.html',
 })
@@ -26,6 +24,8 @@ export class EditComponent implements OnInit {
     private router = inject(Router);
 
     loading = false;
+    visible = true;
+    account: AccountProfile | null = null;
 
     ngOnInit() {
         // In a real app, get this ID from your AuthFacade or route params
@@ -33,6 +33,9 @@ export class EditComponent implements OnInit {
 
         if (id) {
             this.accountFacade.loadProfile(id).subscribe({
+                next: () => {
+                    this.account = this.store.profile();
+                },
                 error: () =>
                     this.messageService.add({
                         severity: 'error',
@@ -47,7 +50,10 @@ export class EditComponent implements OnInit {
         this.router.navigate(['/account/list']);
     }
 
-    onUpdate(command: UpdateAccountCommand) {
+    onUpdate(command: CreateAccountCommand | UpdateAccountCommand) {
+        if (!('accountId' in command)) {
+            return;
+        }
         this.loading = true;
         this.accountFacade.update(command).subscribe({
             next: () => {
