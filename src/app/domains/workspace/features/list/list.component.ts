@@ -20,7 +20,7 @@ import { AccountContextService } from '@/app/core/services/account-context.servi
                         <p class="m-0 text-sm text-muted-color">Manage workspaces for your account.</p>
                     </div>
                 </ng-template>
-                <ng-template pTemplate="gridItem" let-workspace>
+                <ng-template pTemplate="grid" let-workspace>
                     <div class="col-12 sm:col-6 lg:col-4">
                         <p-card>
                             <ng-template pTemplate="title">{{ workspace.name }}</ng-template>

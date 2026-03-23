@@ -31,7 +31,7 @@ import { AccountProfile } from '../../models/account.commands';
                         <p-button label="New Account" icon="pi pi-plus" routerLink="/account/register"></p-button>
                     </div>
                 </ng-template>
-                <ng-template pTemplate="gridItem" let-account>
+                <ng-template pTemplate="grid" let-account>
                     <div class="col-12 sm:col-6 lg:col-4">
                         <p-card>
                             <ng-template pTemplate="title">{{ account.name }}</ng-template>
