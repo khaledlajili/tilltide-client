@@ -47,6 +47,22 @@ import { AccountProfile } from '../../models/account.commands';
                         </p-card>
                     </div>
                 </ng-template>
+                <ng-template pTemplate="gridItem" let-account>
+                    <div class="col-12 sm:col-6 lg:col-4">
+                        <p-card>
+                            <ng-template pTemplate="title">{{ account.name }}</ng-template>
+                            <ng-template pTemplate="subtitle">{{ account.billingEmail }}</ng-template>
+                            <div class="flex items-center gap-2">
+                                <p-tag [value]="account.status" [severity]="account.status === 'ACTIVE' ? 'success' : 'info'"></p-tag>
+                                <span class="text-sm text-muted-color">{{ account.createdAt | date }}</span>
+                            </div>
+                            <div class="mt-4 flex flex-wrap gap-2">
+                                <p-button label="Select" icon="pi pi-check" (onClick)="onSelect(account)"></p-button>
+                                <p-button label="Edit" icon="pi pi-pencil" [text]="true" [routerLink]="['/account/edit', account.accountId]" [disabled]="accountContext.accountId() !== account.accountId"></p-button>
+                            </div>
+                        </p-card>
+                    </div>
+                </ng-template>
             </p-dataView>
         </div>
     `

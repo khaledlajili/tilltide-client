@@ -32,6 +32,18 @@ import { AccountContextService } from '@/app/core/services/account-context.servi
                         </p-card>
                     </div>
                 </ng-template>
+                <ng-template pTemplate="gridItem" let-workspace>
+                    <div class="col-12 sm:col-6 lg:col-4">
+                        <p-card>
+                            <ng-template pTemplate="title">{{ workspace.name }}</ng-template>
+                            <ng-template pTemplate="subtitle">{{ workspace.schemaName }}</ng-template>
+                            <div class="flex items-center gap-2">
+                                <p-tag [value]="workspace.status" [severity]="workspace.status === 'ACTIVE' ? 'success' : 'info'"></p-tag>
+                                <span class="text-sm text-muted-color">{{ workspace.createdAt | date }}</span>
+                            </div>
+                        </p-card>
+                    </div>
+                </ng-template>
             </p-dataView>
         </div>
     `
