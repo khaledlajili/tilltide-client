@@ -7,6 +7,7 @@ import { OAuthService } from 'angular-oauth2-oidc';
 
 export const authInterceptor: HttpInterceptorFn = (req, next) => {
     if (req.url.includes('blob.core.windows.net')) return next(req);
+    if (req.url.includes('/oauth2/token')) return next(req);
 
     const oauthService = inject(OAuthService);
     const authFacade = inject(AuthFacade);
