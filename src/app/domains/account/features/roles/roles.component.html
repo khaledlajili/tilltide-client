@@ -1,0 +1,121 @@
+<p-toast></p-toast>
+
+<p-tabView>
+    <p-tabPanel header="Account">
+        <div class="flex items-center justify-between mb-3">
+            <div>
+                <h2 class="m-0 text-xl font-semibold">Account roles</h2>
+                <p class="m-0 text-sm text-muted-color">Create and manage roles for this account.</p>
+            </div>
+            <p-button label="New role" icon="pi pi-plus" (onClick)="openAccountCreate()"></p-button>
+        </div>
+
+        <p-table [value]="accountRoles" [loading]="accountLoading" dataKey="id">
+            <ng-template pTemplate="header">
+                <tr>
+                    <th>Name</th>
+                    <th>System</th>
+                    <th></th>
+                </tr>
+            </ng-template>
+            <ng-template pTemplate="body" let-role>
+                <tr>
+                    <td>{{ role.name }}</td>
+                    <td>{{ role.systemRole ? 'Yes' : 'No' }}</td>
+                    <td class="text-right">
+                        <p-button label="Edit" icon="pi pi-pencil" [text]="true" (onClick)="openAccountEdit(role)"></p-button>
+                    </td>
+                </tr>
+            </ng-template>
+            <ng-template pTemplate="empty">
+                <tr>
+                    <td colspan="3" class="text-center text-muted-color">No roles found.</td>
+                </tr>
+            </ng-template>
+        </p-table>
+    </p-tabPanel>
+
+    <p-tabPanel header="Workspace">
+        <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-3 mb-3">
+            <div>
+                <h2 class="m-0 text-xl font-semibold">Workspace roles</h2>
+                <p class="m-0 text-sm text-muted-color">Create and manage roles for a workspace.</p>
+            </div>
+            <div class="flex flex-col md:flex-row gap-2">
+                <p-dropdown
+                    [options]="workspaceStore.workspaces()"
+                    optionLabel="name"
+                    optionValue="workspaceId"
+                    placeholder="Select workspace"
+                    [(ngModel)]="selectedWorkspaceId"
+                    (onChange)="onWorkspaceChange()">
+                </p-dropdown>
+                <p-button label="New role" icon="pi pi-plus" [disabled]="!selectedWorkspaceId" (onClick)="openWorkspaceCreate()"></p-button>
+            </div>
+        </div>
+
+        <p-table [value]="workspaceRoles" [loading]="workspaceLoading" dataKey="id">
+            <ng-template pTemplate="header">
+                <tr>
+                    <th>Name</th>
+                    <th>System</th>
+                    <th></th>
+                </tr>
+            </ng-template>
+            <ng-template pTemplate="body" let-role>
+                <tr>
+                    <td>{{ role.name }}</td>
+                    <td>{{ role.systemRole ? 'Yes' : 'No' }}</td>
+                    <td class="text-right">
+                        <p-button label="Edit" icon="pi pi-pencil" [text]="true" (onClick)="openWorkspaceEdit(role)"></p-button>
+                    </td>
+                </tr>
+            </ng-template>
+            <ng-template pTemplate="empty">
+                <tr>
+                    <td colspan="3" class="text-center text-muted-color">No roles found.</td>
+                </tr>
+            </ng-template>
+        </p-table>
+    </p-tabPanel>
+</p-tabView>
+
+<p-dialog header="Account role" [(visible)]="accountDialogVisible" [modal]="true" [style]="{ width: '520px' }">
+    <div class="flex flex-col gap-3">
+        <span class="p-float-label">
+            <input pInputText id="account-role-name" [(ngModel)]="accountRoleName" [disabled]="selectedAccountRole?.systemRole" />
+            <label for="account-role-name">Role name</label>
+        </span>
+        <p-multiSelect
+            [options]="accountPermissions"
+            optionLabel="name"
+            optionValue="id"
+            defaultLabel="Select permissions"
+            [(ngModel)]="accountPermissionIds">
+        </p-multiSelect>
+    </div>
+    <ng-template pTemplate="footer">
+        <p-button label="Cancel" [text]="true" (onClick)="accountDialogVisible = false"></p-button>
+        <p-button label="Save" (onClick)="saveAccountRole()"></p-button>
+    </ng-template>
+</p-dialog>
+
+<p-dialog header="Workspace role" [(visible)]="workspaceDialogVisible" [modal]="true" [style]="{ width: '520px' }">
+    <div class="flex flex-col gap-3">
+        <span class="p-float-label">
+            <input pInputText id="workspace-role-name" [(ngModel)]="workspaceRoleName" [disabled]="selectedWorkspaceRole?.systemRole" />
+            <label for="workspace-role-name">Role name</label>
+        </span>
+        <p-multiSelect
+            [options]="workspacePermissions"
+            optionLabel="name"
+            optionValue="id"
+            defaultLabel="Select permissions"
+            [(ngModel)]="workspacePermissionIds">
+        </p-multiSelect>
+    </div>
+    <ng-template pTemplate="footer">
+        <p-button label="Cancel" [text]="true" (onClick)="workspaceDialogVisible = false"></p-button>
+        <p-button label="Save" (onClick)="saveWorkspaceRole()"></p-button>
+    </ng-template>
+</p-dialog>

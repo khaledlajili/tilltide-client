@@ -45,7 +45,11 @@ export class AppMenu {
                 items: [
                     { label: 'Select', icon: 'pi pi-fw pi-briefcase', routerLink: ['/account/list'] },
                     ...(hasAccount && accountId
-                        ? [{ label: 'Edit', icon: 'pi pi-fw pi-pencil', routerLink: ['/account/edit', accountId] }]
+                        ? [
+                            { label: 'Edit', icon: 'pi pi-fw pi-pencil', routerLink: ['/account/edit', accountId] },
+                            { label: 'Access', icon: 'pi pi-fw pi-users', routerLink: ['/account/access'] },
+                            { label: 'Roles', icon: 'pi pi-fw pi-shield', routerLink: ['/account/roles'] }
+                        ]
                         : [])
                 ]
             });

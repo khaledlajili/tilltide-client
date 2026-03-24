@@ -6,6 +6,7 @@ import { accountContextGuard } from '@/app/core/guards/account-context.guard';
 import { EditComponent } from '@/app/domains/account/features/edit/edit.component';
 import { AppLayout } from '@/app/layout/component/app.layout';
 import { AccessComponent } from '@/app/domains/account/features/access/access.component';
+import { RolesComponent } from '@/app/domains/account/features/roles/roles.component';
 
 export default [
     {
@@ -15,7 +16,8 @@ export default [
         children: [
             { path: 'list', component: AccountListComponent },
             { path: 'edit/:id', component: EditComponent, canActivate: [accountContextGuard] },
-            { path: 'access', component: AccessComponent, canActivate: [accountContextGuard] }
+            { path: 'access', component: AccessComponent, canActivate: [accountContextGuard] },
+            { path: 'roles', component: RolesComponent, canActivate: [accountContextGuard] }
         ]
     }
 ] as Routes;
