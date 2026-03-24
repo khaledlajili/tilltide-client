@@ -3,6 +3,7 @@ import { Routes } from '@angular/router';
 import { AppLayout } from './app/layout/component/app.layout';
 import { Notfound } from './app/pages/notfound/notfound';
 import { authGuard } from '@/app/core/guards/auth.guard';
+import { workspaceContextGuard } from '@/app/core/guards/workspace-context.guard';
 import { PartyComponent } from '@/app/pages/party/party.component';
 import { TerminalComponent } from '@/app/pages/terminal/ui/terminal.component';
 import { EditComponent } from '@/app/domains/account/features/edit/edit.component';
@@ -17,11 +18,11 @@ export const appRoutes: Routes = [
         canActivate: [authGuard],
         children: [
             { path: '', redirectTo: 'trading', pathMatch: 'full' },
-            { path: 'party', component: PartyComponent },
-            { path: 'terminal', component: TerminalComponent },
-            { path: 'invitations', component: InvitationsComponent },
-            { path: 'catalog', loadChildren: () => import('./app/pages/catalog/catalog.routes') },
-            { path: 'trading', loadChildren: () => import('./app/pages/trading/trading.routes') },
+            { path: 'party', component: PartyComponent, canActivate: [workspaceContextGuard] },
+            { path: 'terminal', component: TerminalComponent, canActivate: [workspaceContextGuard] },
+            { path: 'invitations', component: InvitationsComponent, canActivate: [workspaceContextGuard] },
+            { path: 'catalog', loadChildren: () => import('./app/pages/catalog/catalog.routes'), canActivate: [workspaceContextGuard] },
+            { path: 'trading', loadChildren: () => import('./app/pages/trading/trading.routes'), canActivate: [workspaceContextGuard] },
         ]
     },
     { path: 'account', loadChildren: () => import('./app/domains/account/account.routes') },

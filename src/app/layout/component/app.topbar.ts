@@ -11,6 +11,7 @@ import { TranslateService } from '@ngx-translate/core';
 import { AppLogo } from "@/app/layout/component/app-logo.component";
 import { AuthFacade } from '@/app/domains/user/data-access/auth.facade';
 import { AccountContextService } from '@/app/core/services/account-context.service';
+import { WorkspaceContextService } from '@/app/core/services/workspace-context.service';
 
 @Component({
     selector: 'app-topbar',
@@ -25,6 +26,7 @@ export class AppTopbar implements OnInit {
     authFacade = inject(AuthFacade);
     translate = inject(TranslateService);
     accountContext = inject(AccountContextService);
+    workspaceContext = inject(WorkspaceContextService);
     router = inject(Router);
 
     userMenuItems: MenuItem[] = [];
@@ -34,6 +36,8 @@ export class AppTopbar implements OnInit {
         effect(() => {
             const accountId = this.accountContext.accountId();
             const accountName = this.accountContext.accountName();
+            const workspaceId = this.workspaceContext.workspaceId();
+            const workspaceName = this.workspaceContext.workspaceName();
 
             this.userMenuItems = [
                 {
@@ -50,6 +54,17 @@ export class AppTopbar implements OnInit {
                             icon: 'pi pi-power-off',
                             command: () => this.onLogout()
                         }
+                    ]
+                },
+                {
+                    label: workspaceName ? `Workspace: ${workspaceName}` : 'Workspace',
+                    items: [
+                        ...(workspaceId
+                            ? [{ label: 'Manage Workspace', icon: 'pi pi-briefcase', routerLink: ['/workspace/list'] }]
+                            : [{ label: 'Select Workspace', icon: 'pi pi-briefcase', routerLink: ['/workspace/list'] }]),
+                        ...(workspaceId
+                            ? [{ label: 'Leave Workspace', icon: 'pi pi-sign-out', command: () => this.onLeaveWorkspace() }]
+                            : [])
                     ]
                 }
             ];
@@ -93,6 +108,15 @@ export class AppTopbar implements OnInit {
             this.menu.hide();
         }
         this.accountContext.clearAccountContext();
+        this.workspaceContext.clearWorkspaceContext();
         this.router.navigate(['/account/list']);
+    }
+
+    onLeaveWorkspace() {
+        if (this.menu) {
+            this.menu.hide();
+        }
+        this.workspaceContext.clearWorkspaceContext();
+        this.router.navigate(['/workspace/list']);
     }
 }

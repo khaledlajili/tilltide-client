@@ -1,7 +1,8 @@
 import { inject, Injectable } from '@angular/core';
 import { WorkspaceRepository } from './workspace.repository';
 import { WorkspaceStore } from './workspace.store';
-import { tap } from 'rxjs';
+import { tap, switchMap } from 'rxjs';
+import { CreateWorkspaceCommand, UpdateWorkspaceCommand } from '../models/workspace.commands';
 
 @Injectable({ providedIn: 'root' })
 export class WorkspaceFacade {
@@ -15,6 +16,18 @@ export class WorkspaceFacade {
                 this.store.setWorkspaces(workspaces);
                 this.store.setLoading(false);
             })
+        );
+    }
+
+    create(command: CreateWorkspaceCommand) {
+        return this.repo.create(command).pipe(
+            switchMap(() => this.loadWorkspaces(command.accountId))
+        );
+    }
+
+    update(command: UpdateWorkspaceCommand, accountId: string) {
+        return this.repo.update(command).pipe(
+            switchMap(() => this.loadWorkspaces(accountId))
         );
     }
 }

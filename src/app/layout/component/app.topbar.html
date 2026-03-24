@@ -28,7 +28,7 @@
 
                 <button type="button" class="layout-topbar-action" (click)="menu.toggle($event)">
                     <i class="pi pi-user"></i>
-                    <span>{{ accountContext.accountName() || 'Profile' }}</span>
+                    <span>{{ workspaceContext.workspaceName() || accountContext.accountName() || 'Profile' }}</span>
                 </button>
             </div>
         </div>

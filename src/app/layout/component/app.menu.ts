@@ -5,6 +5,7 @@ import { RouterModule } from '@angular/router';
 import { MenuItem } from 'primeng/api';
 import { AppMenuitem } from './app.menuitem';
 import { AccountContextService } from '@/app/core/services/account-context.service';
+import { WorkspaceContextService } from '@/app/core/services/workspace-context.service';
 
 @Component({
     selector: 'app-menu',
@@ -23,11 +24,14 @@ import { AccountContextService } from '@/app/core/services/account-context.servi
 export class AppMenu {
     model: MenuItem[] = [];
     private accountContext = inject(AccountContextService);
+    private workspaceContext = inject(WorkspaceContextService);
 
     constructor() {
         effect(() => {
             const accountId = this.accountContext.accountId();
             const hasAccount = !!accountId;
+            const workspaceId = this.workspaceContext.workspaceId();
+            const hasWorkspace = !!workspaceId;
 
             const items: MenuItem[] = [];
 
@@ -36,6 +40,18 @@ export class AppMenu {
                     label: 'Workspaces',
                     items: [
                         { label: 'List', icon: 'pi pi-fw pi-objects-column', routerLink: ['/workspace/list'] }
+                    ]
+                });
+            }
+
+            if (hasWorkspace) {
+                items.push({
+                    label: 'Business',
+                    items: [
+                        { label: 'Trading', icon: 'pi pi-fw pi-chart-line', routerLink: ['/trading'] },
+                        { label: 'Catalog', icon: 'pi pi-fw pi-book', routerLink: ['/catalog'] },
+                        { label: 'Party', icon: 'pi pi-fw pi-users', routerLink: ['/party'] },
+                        { label: 'Terminal', icon: 'pi pi-fw pi-desktop', routerLink: ['/terminal'] }
                     ]
                 });
             }

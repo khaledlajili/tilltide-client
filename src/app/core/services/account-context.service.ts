@@ -55,6 +55,7 @@ export class AccountContextService {
         }
 
         this.persistUserTokenIfNeeded(subjectToken);
+        this.clearWorkspaceContext();
 
         const params = new HttpParams({
             fromObject: {
@@ -86,6 +87,9 @@ export class AccountContextService {
         localStorage.removeItem('account_access_token');
         localStorage.removeItem('account_id');
         localStorage.removeItem('account_name');
+        localStorage.removeItem('workspace_access_token');
+        localStorage.removeItem('workspace_id');
+        localStorage.removeItem('workspace_name');
         this.accountId.set(null);
         this.accountName.set(null);
         this.refreshFromToken();
@@ -98,6 +102,9 @@ export class AccountContextService {
         localStorage.removeItem('account_access_token');
         localStorage.removeItem('account_id');
         localStorage.removeItem('account_name');
+        localStorage.removeItem('workspace_access_token');
+        localStorage.removeItem('workspace_id');
+        localStorage.removeItem('workspace_name');
         this.accountId.set(null);
         this.accountName.set(null);
     }
@@ -123,6 +130,12 @@ export class AccountContextService {
         localStorage.setItem('account_name', accountName);
         this.accountId.set(accountId);
         this.accountName.set(accountName);
+    }
+
+    private clearWorkspaceContext() {
+        localStorage.removeItem('workspace_access_token');
+        localStorage.removeItem('workspace_id');
+        localStorage.removeItem('workspace_name');
     }
 
     private getActiveAccessToken(): string | null {
