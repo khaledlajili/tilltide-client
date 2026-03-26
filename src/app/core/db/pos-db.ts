@@ -17,6 +17,9 @@ export interface CachedEmployee {
     name: string;
     status: 'ACTIVE' | 'INACTIVE';
     createdAt: string;
+    vaultEncryptedDek?: ArrayBuffer;
+    vaultIv?: Uint8Array;
+    vaultSalt?: Uint8Array;
 }
 
 export class PosDb extends Dexie {

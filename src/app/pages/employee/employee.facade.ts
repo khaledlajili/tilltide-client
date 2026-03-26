@@ -5,6 +5,7 @@ import { WorkspaceContextService } from 'src/app/core/services/workspace-context
 import { CreateEmployeeRequest, Employee } from 'src/app/core/models/employee.model';
 import { tap } from 'rxjs';
 import { EmployeeCacheService } from 'src/app/core/services/employee-cache.service';
+import { AuthService } from 'src/app/core/services/auth.service';
 
 @Injectable({ providedIn: 'root' })
 export class EmployeeFacade {
@@ -13,6 +14,7 @@ export class EmployeeFacade {
     private repo = inject(EmployeeRepository);
     private workspaceContext = inject(WorkspaceContextService);
     private cache = inject(EmployeeCacheService);
+    private auth = inject(AuthService);
 
     employees = this.store.entities;
     loading = this.store.loading;
@@ -27,7 +29,7 @@ export class EmployeeFacade {
         }
     }
 
-    create(name: string) {
+    create(name: string, pin: string) {
         const workspaceId = this.workspaceContext.workspaceId();
         if (!workspaceId) {
             throw new Error('Missing workspace context');
@@ -39,9 +41,10 @@ export class EmployeeFacade {
         };
 
         return this.repo.create(request).pipe(
-            tap((employee: Employee) => {
+            tap(async (employee: Employee) => {
                 this.store.addEmployee(employee);
-                this.cache.upsertOne(employee);
+                await this.cache.upsertOne(employee);
+                await this.auth.setupEmployeePin(employee.id, pin);
             })
         );
     }

@@ -9,6 +9,7 @@ import { CryptoService } from '@/app/core/services/crypto.service';
 import { db } from '@/app/core/db/pos-db';
 import { TerminalCryptoService } from '@/app/core/security/terminal-crypto.service';
 import { authConfig } from '@/app/core/config/auth.config';
+import { EmployeeCacheService } from '@/app/core/services/employee-cache.service';
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
@@ -16,6 +17,7 @@ export class AuthService {
     private terminalCrypto = inject(TerminalCryptoService);
     private http = inject(HttpClient);
     private router = inject(Router);
+    private employeeCache = inject(EmployeeCacheService);
 
     // Signals
     currentStoreId = signal<string | null>(localStorage.getItem('storeId'));
@@ -70,7 +72,14 @@ export class AuthService {
         }
 
         try {
-            await this.unlockOrInitializeVault(pin, config);
+            if (!employeeId) {
+                throw new Error('Employee selection required');
+            }
+            const employee = await this.employeeCache.getById(employeeId);
+            if (!employee?.vaultEncryptedDek || !employee?.vaultIv || !employee?.vaultSalt) {
+                throw new Error('Employee has no local PIN set');
+            }
+            await this.unlockEmployeeVault(pin, employee, config);
             await this.authenticateTerminal(config, employeeId);
             this.router.navigate(['/trading']);
             return true;
@@ -78,6 +87,38 @@ export class AuthService {
             console.error(e);
             return false;
         }
+    }
+
+    async setupEmployeePin(employeeId: string, pin: string): Promise<void> {
+        const config = await db.security.get('active_config');
+        if (!config?.terminalId || !config?.terminalPrivateKey || !config?.terminalPublicKey) {
+            throw new Error('Terminal is not registered. Register this device first.');
+        }
+
+        const deviceSecret = config.deviceSecret || this.generateDeviceSecret();
+        if (!config.deviceSecret) {
+            await db.security.put({
+                ...config,
+                id: 'active_config',
+                deviceSecret
+            });
+        }
+
+        await this.crypto.requestPersistence();
+
+        const dek = await window.crypto.subtle.generateKey(
+            { name: 'AES-GCM', length: 256 }, true, ['encrypt', 'decrypt']
+        );
+        const salt = window.crypto.getRandomValues(new Uint8Array(16));
+        const iv = window.crypto.getRandomValues(new Uint8Array(12));
+        const kek = await this.crypto.deriveKek(pin, salt, deviceSecret);
+        const encryptedDek = await this.crypto.wrapDek(dek, kek, iv);
+
+        await this.employeeCache.updateVault(employeeId, {
+            vaultEncryptedDek: encryptedDek,
+            vaultIv: iv,
+            vaultSalt: salt
+        });
     }
 
     private async runInitialRegistration(password: string, res: LoginResponse, deviceSecret: string) {
@@ -135,6 +176,21 @@ export class AuthService {
             return;
         }
         await this.unlockVault(pin, config);
+    }
+
+    private async unlockEmployeeVault(pin: string, employee: any, config: any) {
+        const kek = await this.crypto.deriveKek(pin, employee.vaultSalt, config.deviceSecret);
+        const rawDek = await window.crypto.subtle.decrypt(
+            { name: 'AES-GCM', iv: employee.vaultIv },
+            kek,
+            employee.vaultEncryptedDek
+        );
+        const dek = await window.crypto.subtle.importKey(
+            'raw', rawDek, 'AES-GCM', false, ['encrypt', 'decrypt']
+        );
+
+        this.activeDek.set(dek);
+        this.isUnlocked.set(true);
     }
 
     private async initializeVault(pin: string, config: any) {

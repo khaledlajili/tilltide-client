@@ -65,8 +65,8 @@ export class EmployeeComponent implements OnInit {
         this.dialog = true;
     }
 
-    register(data: { name: string }): void {
-        this.facade.create(data.name).subscribe(() => {
+    register(data: { name: string; pin: string }): void {
+        this.facade.create(data.name, data.pin).subscribe(() => {
             this.dialog = false;
             this.message.add({ severity: 'success', summary: 'Employee Created' });
         });
