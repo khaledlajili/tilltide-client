@@ -4,10 +4,10 @@ import { FormsModule } from '@angular/forms';
 import { MessageService } from 'primeng/api';
 import { ButtonModule } from 'primeng/button';
 import { DialogModule } from 'primeng/dialog';
-import { DropdownModule } from 'primeng/dropdown';
+import { SelectModule } from 'primeng/select';
 import { InputTextModule } from 'primeng/inputtext';
 import { TableModule } from 'primeng/table';
-import { TabViewModule } from 'primeng/tabview';
+import { TabsModule } from 'primeng/tabs';
 import { TagModule } from 'primeng/tag';
 import { ToastModule } from 'primeng/toast';
 import { forkJoin, finalize } from 'rxjs';
@@ -35,9 +35,9 @@ import {
         ButtonModule,
         InputTextModule,
         DialogModule,
-        DropdownModule,
+        SelectModule,
         TagModule,
-        TabViewModule
+        TabsModule
     ],
     providers: [MessageService],
     templateUrl: './access.component.html'

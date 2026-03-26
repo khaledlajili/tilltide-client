@@ -109,6 +109,7 @@ export class AccountListComponent implements OnInit {
     accountContext = inject(AccountContextService);
     private messageService = inject(MessageService);
     private router = inject(Router);
+
     createDialog = false;
     creating = false;
     editDialog = false;
@@ -154,7 +155,11 @@ export class AccountListComponent implements OnInit {
         this.accountContext.clearAccountContext();
     }
 
-    onCreate(command: CreateAccountCommand): void {
+    onCreate(command: CreateAccountCommand | UpdateAccountCommand): void {
+        if ('accountId' in command) {
+            return;
+        }
+
         this.creating = true;
         this.facade.register(command).subscribe({
             next: () => {

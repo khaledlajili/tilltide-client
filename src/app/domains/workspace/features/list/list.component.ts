@@ -115,7 +115,7 @@ import { WorkspaceCreateFormComponent } from '../../ui/create-form/create-form.c
 export class WorkspaceListComponent implements OnInit {
     protected store = inject(WorkspaceStore);
     private facade = inject(WorkspaceFacade);
-    private accountContext = inject(AccountContextService);
+    protected accountContext = inject(AccountContextService);
     workspaceContext = inject(WorkspaceContextService);
     private messageService = inject(MessageService);
     private router = inject(Router);

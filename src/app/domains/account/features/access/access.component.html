@@ -1,168 +1,198 @@
 <p-toast></p-toast>
 
-<p-tabView>
-    <p-tabPanel header="Account">
-        <div class="flex items-center justify-between mb-3">
-            <div>
-                <h2 class="m-0 text-xl font-semibold">Account members</h2>
-                <p class="m-0 text-sm text-muted-color">Invite and manage access for this account.</p>
+<p-tabs value="account">
+    <p-tablist>
+        <p-tab value="account">Account</p-tab>
+        <p-tab value="workspace">Workspace</p-tab>
+    </p-tablist>
+
+    <p-tabpanels>
+        <p-tabpanel value="account">
+            <div class="flex items-center justify-between mb-3">
+                <div>
+                    <h2 class="m-0 text-xl font-semibold">Account members</h2>
+                    <p class="m-0 text-sm text-muted-color">Invite and manage access for this account.</p>
+                </div>
+                <p-button label="Invite" icon="pi pi-user-plus" (onClick)="openAccountInvite()"></p-button>
             </div>
-            <p-button label="Invite" icon="pi pi-user-plus" (onClick)="openAccountInvite()"></p-button>
-        </div>
 
-        <p-table [value]="accountMembers" [loading]="accountLoading" dataKey="id">
-            <ng-template pTemplate="header">
-                <tr>
-                    <th>Name</th>
-                    <th>Email</th>
-                    <th>Role</th>
-                    <th>Status</th>
-                    <th>Joined</th>
-                    <th></th>
-                </tr>
-            </ng-template>
-            <ng-template pTemplate="body" let-member>
-                <tr>
-                    <td>{{ member.fullName }}</td>
-                    <td>{{ member.email }}</td>
-                    <td>{{ member.roleName }}</td>
-                    <td>
-                        <p-tag [value]="member.status" [severity]="member.status === 'ACTIVE' ? 'success' : 'warning'"></p-tag>
-                    </td>
-                    <td>{{ member.createdAt | date: 'mediumDate' }}</td>
-                    <td class="text-right">
-                        <p-button label="Edit" icon="pi pi-pencil" [text]="true" (onClick)="openEdit(member)"></p-button>
-                    </td>
-                </tr>
-            </ng-template>
-            <ng-template pTemplate="empty">
-                <tr>
-                    <td colspan="6" class="text-center text-muted-color">No members found.</td>
-                </tr>
-            </ng-template>
-        </p-table>
+            <p-table [value]="accountMembers" [loading]="accountLoading" dataKey="id">
+                <ng-template pTemplate="header">
+                    <tr>
+                        <th>Name</th>
+                        <th>Email</th>
+                        <th>Role</th>
+                        <th>Status</th>
+                        <th>Joined</th>
+                        <th></th>
+                    </tr>
+                </ng-template>
+                <ng-template pTemplate="body" let-member>
+                    <tr>
+                        <td>{{ member.fullName }}</td>
+                        <td>{{ member.email }}</td>
+                        <td>{{ member.roleName }}</td>
+                        <td>
+                            <p-tag
+                                [value]="member.status"
+                                [severity]="member.status === 'ACTIVE' ? 'success' : 'warn'">
+                            </p-tag>
+                        </td>
+                        <td>{{ member.createdAt | date: 'mediumDate' }}</td>
+                        <td class="text-right">
+                            <p-button label="Edit" icon="pi pi-pencil" [text]="true" (onClick)="openEdit(member)"></p-button>
+                        </td>
+                    </tr>
+                </ng-template>
+                <ng-template pTemplate="empty">
+                    <tr>
+                        <td colspan="6" class="text-center text-muted-color">No members found.</td>
+                    </tr>
+                </ng-template>
+            </p-table>
 
-        <div class="flex items-center justify-between mt-6 mb-3">
-            <h3 class="m-0 text-lg font-semibold">Pending invitations</h3>
-        </div>
-
-        <p-table [value]="accountInvitations" dataKey="id">
-            <ng-template pTemplate="header">
-                <tr>
-                    <th>Email</th>
-                    <th>Role</th>
-                    <th>Status</th>
-                    <th>Expires</th>
-                    <th></th>
-                </tr>
-            </ng-template>
-            <ng-template pTemplate="body" let-invite>
-                <tr>
-                    <td>{{ invite.email }}</td>
-                    <td>{{ invite.roleName }}</td>
-                    <td>
-                        <p-tag [value]="invite.status" [severity]="invite.status === 'PENDING' ? 'info' : 'secondary'"></p-tag>
-                    </td>
-                    <td>{{ invite.expiresAt | date: 'mediumDate' }}</td>
-                    <td class="text-right">
-                        <p-button label="Revoke" icon="pi pi-times" severity="danger" [text]="true" (onClick)="revokeAccountInvitation(invite)"></p-button>
-                    </td>
-                </tr>
-            </ng-template>
-            <ng-template pTemplate="empty">
-                <tr>
-                    <td colspan="5" class="text-center text-muted-color">No invitations found.</td>
-                </tr>
-            </ng-template>
-        </p-table>
-    </p-tabPanel>
-
-    <p-tabPanel header="Workspace">
-        <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-3 mb-3">
-            <div>
-                <h2 class="m-0 text-xl font-semibold">Workspace members</h2>
-                <p class="m-0 text-sm text-muted-color">Invite and manage access for a workspace.</p>
+            <div class="flex items-center justify-between mt-6 mb-3">
+                <h3 class="m-0 text-lg font-semibold">Pending invitations</h3>
             </div>
-            <div class="flex flex-col md:flex-row gap-2">
-                <p-dropdown
-                    [options]="workspaceStore.workspaces()"
-                    optionLabel="name"
-                    optionValue="workspaceId"
-                    placeholder="Select workspace"
-                    [(ngModel)]="selectedWorkspaceId"
-                    (onChange)="onWorkspaceChange()">
-                </p-dropdown>
-                <p-button label="Invite" icon="pi pi-user-plus" [disabled]="!selectedWorkspaceId" (onClick)="openWorkspaceInvite()"></p-button>
+
+            <p-table [value]="accountInvitations" dataKey="id">
+                <ng-template pTemplate="header">
+                    <tr>
+                        <th>Email</th>
+                        <th>Role</th>
+                        <th>Status</th>
+                        <th>Expires</th>
+                        <th></th>
+                    </tr>
+                </ng-template>
+                <ng-template pTemplate="body" let-invite>
+                    <tr>
+                        <td>{{ invite.email }}</td>
+                        <td>{{ invite.roleName }}</td>
+                        <td>
+                            <p-tag [value]="invite.status" [severity]="invite.status === 'PENDING' ? 'info' : 'secondary'"></p-tag>
+                        </td>
+                        <td>{{ invite.expiresAt | date: 'mediumDate' }}</td>
+                        <td class="text-right">
+                            <p-button
+                                label="Revoke"
+                                icon="pi pi-times"
+                                severity="danger"
+                                [text]="true"
+                                (onClick)="revokeAccountInvitation(invite)">
+                            </p-button>
+                        </td>
+                    </tr>
+                </ng-template>
+                <ng-template pTemplate="empty">
+                    <tr>
+                        <td colspan="5" class="text-center text-muted-color">No invitations found.</td>
+                    </tr>
+                </ng-template>
+            </p-table>
+        </p-tabpanel>
+
+        <p-tabpanel value="workspace">
+            <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-3 mb-3">
+                <div>
+                    <h2 class="m-0 text-xl font-semibold">Workspace members</h2>
+                    <p class="m-0 text-sm text-muted-color">Invite and manage access for a workspace.</p>
+                </div>
+                <div class="flex flex-col md:flex-row gap-2">
+                    <p-select
+                        [options]="workspaceStore.workspaces()"
+                        optionLabel="name"
+                        optionValue="workspaceId"
+                        placeholder="Select workspace"
+                        [(ngModel)]="selectedWorkspaceId"
+                        (onChange)="onWorkspaceChange()">
+                    </p-select>
+                    <p-button
+                        label="Invite"
+                        icon="pi pi-user-plus"
+                        [disabled]="!selectedWorkspaceId"
+                        (onClick)="openWorkspaceInvite()">
+                    </p-button>
+                </div>
             </div>
-        </div>
 
-        <p-table [value]="workspaceMembers" [loading]="workspaceLoading" dataKey="id">
-            <ng-template pTemplate="header">
-                <tr>
-                    <th>Name</th>
-                    <th>Email</th>
-                    <th>Role</th>
-                    <th>Status</th>
-                    <th>Joined</th>
-                    <th></th>
-                </tr>
-            </ng-template>
-            <ng-template pTemplate="body" let-member>
-                <tr>
-                    <td>{{ member.fullName }}</td>
-                    <td>{{ member.email }}</td>
-                    <td>{{ member.roleName }}</td>
-                    <td>
-                        <p-tag [value]="member.status" [severity]="member.status === 'ACTIVE' ? 'success' : 'warning'"></p-tag>
-                    </td>
-                    <td>{{ member.createdAt | date: 'mediumDate' }}</td>
-                    <td class="text-right">
-                        <p-button label="Edit" icon="pi pi-pencil" [text]="true" (onClick)="openWorkspaceEdit(member)"></p-button>
-                    </td>
-                </tr>
-            </ng-template>
-            <ng-template pTemplate="empty">
-                <tr>
-                    <td colspan="6" class="text-center text-muted-color">No members found.</td>
-                </tr>
-            </ng-template>
-        </p-table>
+            <p-table [value]="workspaceMembers" [loading]="workspaceLoading" dataKey="id">
+                <ng-template pTemplate="header">
+                    <tr>
+                        <th>Name</th>
+                        <th>Email</th>
+                        <th>Role</th>
+                        <th>Status</th>
+                        <th>Joined</th>
+                        <th></th>
+                    </tr>
+                </ng-template>
+                <ng-template pTemplate="body" let-member>
+                    <tr>
+                        <td>{{ member.fullName }}</td>
+                        <td>{{ member.email }}</td>
+                        <td>{{ member.roleName }}</td>
+                        <td>
+                            <p-tag
+                                [value]="member.status"
+                                [severity]="member.status === 'ACTIVE' ? 'success' : 'warn'">
+                            </p-tag>
+                        </td>
+                        <td>{{ member.createdAt | date: 'mediumDate' }}</td>
+                        <td class="text-right">
+                            <p-button label="Edit" icon="pi pi-pencil" [text]="true" (onClick)="openWorkspaceEdit(member)"></p-button>
+                        </td>
+                    </tr>
+                </ng-template>
+                <ng-template pTemplate="empty">
+                    <tr>
+                        <td colspan="6" class="text-center text-muted-color">No members found.</td>
+                    </tr>
+                </ng-template>
+            </p-table>
 
-        <div class="flex items-center justify-between mt-6 mb-3">
-            <h3 class="m-0 text-lg font-semibold">Pending invitations</h3>
-        </div>
+            <div class="flex items-center justify-between mt-6 mb-3">
+                <h3 class="m-0 text-lg font-semibold">Pending invitations</h3>
+            </div>
 
-        <p-table [value]="workspaceInvitations" dataKey="id">
-            <ng-template pTemplate="header">
-                <tr>
-                    <th>Email</th>
-                    <th>Role</th>
-                    <th>Status</th>
-                    <th>Expires</th>
-                    <th></th>
-                </tr>
-            </ng-template>
-            <ng-template pTemplate="body" let-invite>
-                <tr>
-                    <td>{{ invite.email }}</td>
-                    <td>{{ invite.roleName }}</td>
-                    <td>
-                        <p-tag [value]="invite.status" [severity]="invite.status === 'PENDING' ? 'info' : 'secondary'"></p-tag>
-                    </td>
-                    <td>{{ invite.expiresAt | date: 'mediumDate' }}</td>
-                    <td class="text-right">
-                        <p-button label="Revoke" icon="pi pi-times" severity="danger" [text]="true" (onClick)="revokeWorkspaceInvitation(invite)"></p-button>
-                    </td>
-                </tr>
-            </ng-template>
-            <ng-template pTemplate="empty">
-                <tr>
-                    <td colspan="5" class="text-center text-muted-color">No invitations found.</td>
-                </tr>
-            </ng-template>
-        </p-table>
-    </p-tabPanel>
-</p-tabView>
+            <p-table [value]="workspaceInvitations" dataKey="id">
+                <ng-template pTemplate="header">
+                    <tr>
+                        <th>Email</th>
+                        <th>Role</th>
+                        <th>Status</th>
+                        <th>Expires</th>
+                        <th></th>
+                    </tr>
+                </ng-template>
+                <ng-template pTemplate="body" let-invite>
+                    <tr>
+                        <td>{{ invite.email }}</td>
+                        <td>{{ invite.roleName }}</td>
+                        <td>
+                            <p-tag [value]="invite.status" [severity]="invite.status === 'PENDING' ? 'info' : 'secondary'"></p-tag>
+                        </td>
+                        <td>{{ invite.expiresAt | date: 'mediumDate' }}</td>
+                        <td class="text-right">
+                            <p-button
+                                label="Revoke"
+                                icon="pi pi-times"
+                                severity="danger"
+                                [text]="true"
+                                (onClick)="revokeWorkspaceInvitation(invite)">
+                            </p-button>
+                        </td>
+                    </tr>
+                </ng-template>
+                <ng-template pTemplate="empty">
+                    <tr>
+                        <td colspan="5" class="text-center text-muted-color">No invitations found.</td>
+                    </tr>
+                </ng-template>
+            </p-table>
+        </p-tabpanel>
+    </p-tabpanels>
+</p-tabs>
 
 <p-dialog header="Invite to account" [(visible)]="accountInviteVisible" [modal]="true" [style]="{ width: '420px' }">
     <div class="flex flex-col gap-3">
@@ -170,13 +200,13 @@
             <input pInputText id="invite-email" type="email" [(ngModel)]="inviteEmail" />
             <label for="invite-email">Email</label>
         </span>
-        <p-dropdown
+        <p-select
             [options]="accountRoles"
             optionLabel="name"
             optionValue="id"
             placeholder="Select role"
             [(ngModel)]="inviteRoleId">
-        </p-dropdown>
+        </p-select>
     </div>
     <ng-template pTemplate="footer">
         <p-button label="Cancel" [text]="true" (onClick)="accountInviteVisible = false"></p-button>
@@ -190,13 +220,13 @@
             <input pInputText id="invite-workspace-email" type="email" [(ngModel)]="inviteWorkspaceEmail" />
             <label for="invite-workspace-email">Email</label>
         </span>
-        <p-dropdown
+        <p-select
             [options]="workspaceRoles"
             optionLabel="name"
             optionValue="id"
             placeholder="Select role"
             [(ngModel)]="inviteWorkspaceRoleId">
-        </p-dropdown>
+        </p-select>
     </div>
     <ng-template pTemplate="footer">
         <p-button label="Cancel" [text]="true" (onClick)="workspaceInviteVisible = false"></p-button>
@@ -206,20 +236,20 @@
 
 <p-dialog header="Edit member" [(visible)]="editMemberVisible" [modal]="true" [style]="{ width: '420px' }">
     <div class="flex flex-col gap-3">
-        <p-dropdown
+        <p-select
             [options]="accountRoles"
             optionLabel="name"
             optionValue="id"
             placeholder="Select role"
             [(ngModel)]="selectedRoleId">
-        </p-dropdown>
-        <p-dropdown
+        </p-select>
+        <p-select
             [options]="[{ label: 'Active', value: 'ACTIVE' }, { label: 'Suspended', value: 'SUSPENDED' }]"
             optionLabel="label"
             optionValue="value"
             placeholder="Select status"
             [(ngModel)]="selectedStatus">
-        </p-dropdown>
+        </p-select>
     </div>
     <ng-template pTemplate="footer">
         <p-button label="Cancel" [text]="true" (onClick)="editMemberVisible = false"></p-button>
@@ -229,20 +259,20 @@
 
 <p-dialog header="Edit workspace member" [(visible)]="editWorkspaceMemberVisible" [modal]="true" [style]="{ width: '420px' }">
     <div class="flex flex-col gap-3">
-        <p-dropdown
+        <p-select
             [options]="workspaceRoles"
             optionLabel="name"
             optionValue="id"
             placeholder="Select role"
             [(ngModel)]="selectedWorkspaceRoleId">
-        </p-dropdown>
-        <p-dropdown
+        </p-select>
+        <p-select
             [options]="[{ label: 'Active', value: 'ACTIVE' }, { label: 'Suspended', value: 'SUSPENDED' }]"
             optionLabel="label"
             optionValue="value"
             placeholder="Select status"
             [(ngModel)]="selectedWorkspaceStatus">
-        </p-dropdown>
+        </p-select>
     </div>
     <ng-template pTemplate="footer">
         <p-button label="Cancel" [text]="true" (onClick)="editWorkspaceMemberVisible = false"></p-button>

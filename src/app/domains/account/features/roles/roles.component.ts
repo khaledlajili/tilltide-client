@@ -8,10 +8,9 @@ import { DialogModule } from 'primeng/dialog';
 import { InputTextModule } from 'primeng/inputtext';
 import { MultiSelectModule } from 'primeng/multiselect';
 import { TableModule } from 'primeng/table';
-import { TabViewModule } from 'primeng/tabview';
+import { TabsModule } from 'primeng/tabs';
+import { SelectModule } from 'primeng/select';
 import { ToastModule } from 'primeng/toast';
-import { DropdownModule } from 'primeng/dropdown';
-
 import { AccountContextService } from '@/app/core/services/account-context.service';
 import { RoleApiService } from '@/app/core/services/role.api.service';
 import { WorkspaceFacade } from '@/app/domains/workspace/data-access/workspace.facade';
@@ -30,8 +29,8 @@ import { CreateRoleCommand, ManagedRole, RolePermission, UpdateRoleCommand } fro
         InputTextModule,
         DialogModule,
         MultiSelectModule,
-        TabViewModule,
-        DropdownModule
+        TabsModule,
+        SelectModule
     ],
     providers: [MessageService],
     templateUrl: './roles.component.html'
@@ -47,15 +46,12 @@ export class RolesComponent implements OnInit {
     workspaceRoles: ManagedRole[] = [];
     accountPermissions: RolePermission[] = [];
     workspacePermissions: RolePermission[] = [];
-
     accountLoading = false;
     workspaceLoading = false;
-
     selectedWorkspaceId: string | null = null;
 
     accountDialogVisible = false;
     workspaceDialogVisible = false;
-
     accountEditMode = false;
     workspaceEditMode = false;
 
@@ -117,9 +113,7 @@ export class RolesComponent implements OnInit {
 
     saveAccountRole(): void {
         const accountId = this.accountContext.accountId();
-        if (!accountId || this.accountPermissionIds.length === 0) {
-            return;
-        }
+        if (!accountId || this.accountPermissionIds.length === 0) return;
 
         if (this.accountEditMode && this.selectedAccountRole) {
             const command: UpdateRoleCommand = {
@@ -150,9 +144,7 @@ export class RolesComponent implements OnInit {
     }
 
     saveWorkspaceRole(): void {
-        if (!this.selectedWorkspaceId || this.workspacePermissionIds.length === 0) {
-            return;
-        }
+        if (!this.selectedWorkspaceId || this.workspacePermissionIds.length === 0) return;
 
         if (this.workspaceEditMode && this.selectedWorkspaceRole) {
             const command: UpdateRoleCommand = {
