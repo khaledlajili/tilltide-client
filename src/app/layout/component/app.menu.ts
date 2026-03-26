@@ -51,7 +51,8 @@ export class AppMenu {
                         { label: 'Trading', icon: 'pi pi-fw pi-chart-line', routerLink: ['/trading'] },
                         { label: 'Catalog', icon: 'pi pi-fw pi-book', routerLink: ['/catalog'] },
                         { label: 'Party', icon: 'pi pi-fw pi-users', routerLink: ['/party'] },
-                        { label: 'Terminal', icon: 'pi pi-fw pi-desktop', routerLink: ['/terminal'] }
+                        { label: 'Terminal', icon: 'pi pi-fw pi-desktop', routerLink: ['/terminal'] },
+                        { label: 'Employees', icon: 'pi pi-fw pi-id-card', routerLink: ['/employees'] }
                     ]
                 });
             }
