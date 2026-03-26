@@ -123,6 +123,9 @@ export class WorkspaceContextService {
     }
 
     private getActiveAccessToken(): string | null {
-        return localStorage.getItem('workspace_access_token') || localStorage.getItem('account_access_token') || this.oauthService.getAccessToken();
+        return localStorage.getItem('terminal_access_token')
+            || localStorage.getItem('workspace_access_token')
+            || localStorage.getItem('account_access_token')
+            || this.oauthService.getAccessToken();
     }
 }

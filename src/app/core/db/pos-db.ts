@@ -8,15 +8,29 @@ export interface TerminalConfig {
     deviceSecret: string;
     terminalPublicKey: CryptoKey;
     terminalPrivateKey: CryptoKey; // Stored as non-exportable object
+    terminalId?: string;
+    workspaceId?: string;
+}
+
+export interface CachedEmployee {
+    id: string;
+    name: string;
+    status: 'ACTIVE' | 'INACTIVE';
+    createdAt: string;
 }
 
 export class PosDb extends Dexie {
     security!: Table<TerminalConfig>;
+    employees!: Table<CachedEmployee>;
 
     constructor() {
         super('PosDatabase');
         this.version(1).stores({
             security: 'id'
+        });
+        this.version(2).stores({
+            security: 'id',
+            employees: 'id'
         });
     }
 }

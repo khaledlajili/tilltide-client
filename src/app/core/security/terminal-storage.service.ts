@@ -1,20 +1,29 @@
 import { Injectable } from '@angular/core';
+import { db, TerminalConfig } from '@/app/core/db/pos-db';
 
 @Injectable({ providedIn: 'root' })
 export class TerminalStorageService {
 
-    private dbName = 'tilltide-terminal';
-
-    async saveTerminalContext(data: any) {
-        localStorage.setItem(this.dbName, JSON.stringify(data));
+    async saveTerminalContext(data: Partial<TerminalConfig>) {
+        const existing = await db.security.get('active_config');
+        await db.security.put({
+            id: 'active_config',
+            encryptedDek: existing?.encryptedDek ?? new ArrayBuffer(0),
+            iv: existing?.iv ?? new Uint8Array(),
+            salt: existing?.salt ?? new Uint8Array(),
+            deviceSecret: existing?.deviceSecret ?? '',
+            terminalPublicKey: existing?.terminalPublicKey ?? (data.terminalPublicKey as CryptoKey),
+            terminalPrivateKey: existing?.terminalPrivateKey ?? (data.terminalPrivateKey as CryptoKey),
+            terminalId: data.terminalId ?? existing?.terminalId,
+            workspaceId: data.workspaceId ?? existing?.workspaceId
+        });
     }
 
     loadTerminalContext() {
-        const raw = localStorage.getItem(this.dbName);
-        return raw ? JSON.parse(raw) : null;
+        return db.security.get('active_config');
     }
 
-    clear() {
-        localStorage.removeItem(this.dbName);
+    async clear() {
+        await db.security.delete('active_config');
     }
 }

@@ -17,6 +17,12 @@
                         [loading]="loading"
                         (onClick)="onLogin()">
                     </p-button>
+                    <p-button
+                        label="Login as Employee"
+                        icon="pi pi-id-card"
+                        styleClass="w-full max-w-xs p-button-secondary"
+                        routerLink="/user/pin">
+                    </p-button>
                     <div class="text-center text-muted-color mt-4">
                         Don't have an account?
                         <a routerLink="/account/register" class="font-medium no-underline text-primary cursor-pointer">

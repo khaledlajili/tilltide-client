@@ -12,6 +12,17 @@
                     <span class="text-muted-color">Enter PIN to resume session</span>
                 </div>
 
+                <div class="mb-6">
+                    <label class="block mb-2 text-sm text-muted-color">Employee</label>
+                    <p-select
+                        [options]="employees"
+                        optionLabel="name"
+                        optionValue="id"
+                        placeholder="Select employee"
+                        [(ngModel)]="selectedEmployeeId">
+                    </p-select>
+                </div>
+
                 <div class="flex justify-center gap-3 mb-8">
                     <div *ngFor="let dot of [1,2,3,4]"
                          [class.bg-primary]="pin().length >= dot"

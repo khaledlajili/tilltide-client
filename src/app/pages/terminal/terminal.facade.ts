@@ -48,7 +48,8 @@ export class TerminalFacade {
                     tap(async terminal => {
                         await this.storage.saveTerminalContext({
                             terminalId: terminal.id,
-                            privateKey: keyPair.privateKey,
+                            terminalPrivateKey: keyPair.privateKey,
+                            terminalPublicKey: keyPair.publicKey,
                             workspaceId: terminal.workspaceId
                         });
                         this.store.addTerminal(terminal);

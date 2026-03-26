@@ -1,23 +1,36 @@
-import { Component, inject, signal, HostListener } from '@angular/core'; // Added HostListener
+import { Component, inject, signal, HostListener, OnInit } from '@angular/core'; // Added HostListener
 import { CommonModule } from '@angular/common';
-import { Router } from '@angular/router';
 import { ButtonModule } from 'primeng/button';
 import { MessageService } from 'primeng/api';
 import { ToastModule } from 'primeng/toast';
 import { AuthService } from '@/app/core/services/auth.service';
+import { FormsModule } from '@angular/forms';
+import { SelectModule } from 'primeng/select';
+import { EmployeeCacheService } from '@/app/core/services/employee-cache.service';
+import { CachedEmployee } from '@/app/core/db/pos-db';
 
 @Component({
     standalone: true,
-    imports: [CommonModule, ButtonModule, ToastModule],
+    imports: [CommonModule, ButtonModule, ToastModule, FormsModule, SelectModule],
     providers: [MessageService],
     templateUrl: './pin.component.html',
 })
-export class PinComponent {
+export class PinComponent implements OnInit {
     pin = signal<string>('');
     loading = false;
+    employees: CachedEmployee[] = [];
+    selectedEmployeeId: string | null = null;
 
     private auth = inject(AuthService);
     private messageService = inject(MessageService);
+    private employeeCache = inject(EmployeeCacheService);
+
+    async ngOnInit(): Promise<void> {
+        this.employees = await this.employeeCache.getAll();
+        if (this.employees.length === 1) {
+            this.selectedEmployeeId = this.employees[0].id;
+        }
+    }
 
     // This listens for any keydown event on the page
     @HostListener('window:keydown', ['$event'])
@@ -50,7 +63,17 @@ export class PinComponent {
         this.loading = true;
         // Small delay for UI feedback
         setTimeout(async () => {
-            const success = await this.auth.loginWithPin(this.pin());
+            if (!this.selectedEmployeeId) {
+                this.messageService.add({
+                    severity: 'warn',
+                    summary: 'Select employee',
+                    detail: 'Choose an employee before entering the PIN.'
+                });
+                this.loading = false;
+                return;
+            }
+
+            const success = await this.auth.loginEmployeeWithPin(this.pin(), this.selectedEmployeeId);
             if (!success) {
                 this.messageService.add({
                     severity: 'error',

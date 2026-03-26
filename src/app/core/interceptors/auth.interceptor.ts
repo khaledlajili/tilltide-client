@@ -13,7 +13,8 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
     const authFacade = inject(AuthFacade);
     const router = inject(Router);
 
-    const token = localStorage.getItem('workspace_access_token')
+    const token = localStorage.getItem('terminal_access_token')
+        || localStorage.getItem('workspace_access_token')
         || localStorage.getItem('account_access_token')
         || oauthService.getAccessToken();
     let headers = req.headers;
@@ -26,8 +27,14 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
     return next(cloned).pipe(
         catchError((error: HttpErrorResponse) => {
             if (error.status === 401 || error.status === 403) {
-                authFacade.logout();
-                router.navigate(['/user/login']);
+                if (localStorage.getItem('terminal_access_token')) {
+                    localStorage.removeItem('terminal_access_token');
+                    localStorage.removeItem('terminal_employee_id');
+                    router.navigate(['/user/pin']);
+                } else {
+                    authFacade.logout();
+                    router.navigate(['/user/login']);
+                }
             }
             return throwError(() => error);
         })

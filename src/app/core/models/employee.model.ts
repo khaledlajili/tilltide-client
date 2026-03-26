@@ -8,6 +8,5 @@ export interface Employee {
 export interface CreateEmployeeRequest {
     workspaceId: string;
     name: string;
-    pin: string;
     roleIds?: string[];
 }
