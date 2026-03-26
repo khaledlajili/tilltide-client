@@ -13,12 +13,8 @@ import { ButtonModule } from 'primeng/button';
 <p-dialog [(visible)]="visible" header="Register Terminal" [modal]="true" (onHide)="close()">
     <form [formGroup]="form" class="flex flex-col gap-4">
         <div>
-            <label class="block mb-2">Name</label>
-            <input pInputText formControlName="name" class="w-full"/>
-        </div>
-        <div>
-            <label class="block mb-2">Location</label>
-            <input pInputText formControlName="location" class="w-full"/>
+            <label class="block mb-2">Label</label>
+            <input pInputText formControlName="label" class="w-full"/>
         </div>
     </form>
 
@@ -33,13 +29,12 @@ export class TerminalFormComponent {
 
     @Input() visible = false;
     @Output() visibleChange = new EventEmitter<boolean>();
-    @Output() save = new EventEmitter<{ name: string; location?: string }>();
+    @Output() save = new EventEmitter<{ label: string }>();
 
     private fb = inject(FormBuilder);
 
     form = this.fb.group({
-        name: ['', Validators.required],
-        location: ['']
+        label: ['', Validators.required]
     });
 
     submit() {

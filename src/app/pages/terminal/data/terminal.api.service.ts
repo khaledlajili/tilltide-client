@@ -7,21 +7,17 @@ import { Terminal, RegisterTerminalRequest } from 'src/app/core/models/terminal.
 export class TerminalApiService {
 
     private http = inject(HttpClient);
-    private url = `${environment.apiUrl}/terminals`;
+    private url = `${environment.apiUrl}/api/terminals`;
 
-    getAll() {
-        return this.http.get<Terminal[]>(this.url);
+    getAll(workspaceId: string) {
+        return this.http.get<Terminal[]>(this.url, { params: { workspaceId } });
     }
 
     register(req: RegisterTerminalRequest) {
-        return this.http.post<Terminal>(`${this.url}/register`, req);
+        return this.http.post<Terminal>(this.url, req);
     }
 
-    revoke(id: string) {
-        return this.http.put<void>(`${this.url}/${id}/revoke`, {});
-    }
-
-    delete(id: string) {
-        return this.http.delete<void>(`${this.url}/${id}`);
+    revoke(id: string, workspaceId: string) {
+        return this.http.post<void>(`${this.url}/${id}/revoke`, null, { params: { workspaceId } });
     }
 }

@@ -7,8 +7,7 @@ export class TerminalRepository {
 
     private api = inject(TerminalApiService);
 
-    findAll() { return this.api.getAll(); }
+    findAll(workspaceId: string) { return this.api.getAll(workspaceId); }
     register(req: RegisterTerminalRequest) { return this.api.register(req); }
-    revoke(id: string) { return this.api.revoke(id); }
-    delete(id: string) { return this.api.delete(id); }
+    revoke(id: string, workspaceId: string) { return this.api.revoke(id, workspaceId); }
 }

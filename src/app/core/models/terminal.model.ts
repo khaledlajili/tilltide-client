@@ -1,15 +1,14 @@
 export interface Terminal {
     id: string;
-    name: string;
-    location?: string;
+    workspaceId: string;
+    label: string;
     status: 'ACTIVE' | 'REVOKED';
-    registeredAt: string;
-    lastSeen?: string;
+    createdAt: string;
+    lastSeenAt?: string;
 }
 
 export interface RegisterTerminalRequest {
-    name: string;
-    location?: string;
-    publicKey: string;
-    deviceFingerprint: string;
+    workspaceId: string;
+    label: string;
+    publicKey: JsonWebKey;
 }

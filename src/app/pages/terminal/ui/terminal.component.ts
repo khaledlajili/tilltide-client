@@ -34,11 +34,11 @@ import { TerminalFormComponent } from './terminal-form.component';
         </ng-template>
         <ng-template #body let-terminal>
             <tr>
-                <td>{{ terminal.name }}</td>
+                <td>{{ terminal.label }}</td>
                 <td>{{ terminal.status }}</td>
-                <td>{{ terminal.registeredAt }}</td>
+                <td>{{ terminal.createdAt }}</td>
                 <td>
-                    <p-button icon="pi pi-trash" severity="danger" [text]="true" (click)="delete(terminal.id)"></p-button>
+                    <p-button icon="pi pi-ban" severity="warning" [text]="true" (click)="revoke(terminal.id)"></p-button>
                 </td>
             </tr>
         </ng-template>
@@ -70,15 +70,15 @@ export class TerminalComponent implements OnInit {
     }
 
     register(data: any) {
-        this.facade.register(data.name, data.location).subscribe(() => {
+        this.facade.register(data.label).subscribe(() => {
             this.dialog = false;
             this.message.add({ severity: 'success', summary: 'Terminal Registered' });
         });
     }
 
-    delete(id: string) {
-        this.facade.delete(id).subscribe(() => {
-            this.message.add({ severity: 'info', summary: 'Terminal Deleted' });
+    revoke(id: string) {
+        this.facade.revoke(id).subscribe(() => {
+            this.message.add({ severity: 'info', summary: 'Terminal Revoked' });
         });
     }
 }

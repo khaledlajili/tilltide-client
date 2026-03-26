@@ -14,9 +14,8 @@ export class TerminalCryptoService {
         );
     }
 
-    async exportPublicKey(publicKey: CryptoKey): Promise<string> {
-        const exported = await crypto.subtle.exportKey('spki', publicKey);
-        return btoa(String.fromCharCode(...new Uint8Array(exported)));
+    async exportPublicKey(publicKey: CryptoKey): Promise<JsonWebKey> {
+        return crypto.subtle.exportKey('jwk', publicKey);
     }
 
     async sign(privateKey: CryptoKey, data: string): Promise<string> {

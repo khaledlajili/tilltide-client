@@ -12,9 +12,9 @@ export const TerminalStore = signalStore(
     withState({ loading: false }),
     withMethods((store, repo = inject(TerminalRepository)) => ({
 
-        loadAll: rxMethod<void>(pipe(
+        loadAll: rxMethod<string>(pipe(
             tap(() => patchState(store, { loading: true })),
-            switchMap(() => repo.findAll().pipe(
+            switchMap((workspaceId) => repo.findAll(workspaceId).pipe(
                 tap(terminals => patchState(store, setAllEntities(terminals), { loading: false }))
             ))
         )),
