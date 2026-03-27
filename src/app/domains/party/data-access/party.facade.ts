@@ -1,0 +1,1 @@
+export { PartyFacade } from '../party.facade';

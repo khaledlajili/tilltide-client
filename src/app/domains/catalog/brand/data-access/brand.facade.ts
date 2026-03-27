@@ -1,0 +1,1 @@
+export { BrandFacade } from '../brand.facade';

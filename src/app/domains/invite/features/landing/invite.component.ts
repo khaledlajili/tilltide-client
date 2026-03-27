@@ -1,0 +1,1 @@
+export { InviteComponent } from '../../invite.component';

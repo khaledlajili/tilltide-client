@@ -1,0 +1,1 @@
+export { ProductFacade } from '../product.facade';

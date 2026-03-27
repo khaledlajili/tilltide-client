@@ -1,0 +1,1 @@
+export { TerminalFacade } from '../terminal.facade';

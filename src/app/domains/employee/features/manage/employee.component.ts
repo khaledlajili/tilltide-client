@@ -1,0 +1,1 @@
+export { EmployeeComponent } from '../../ui/employee.component';

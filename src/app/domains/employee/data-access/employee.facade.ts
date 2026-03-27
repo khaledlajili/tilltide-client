@@ -1,0 +1,1 @@
+export { EmployeeFacade } from '../employee.facade';

@@ -1,0 +1,1 @@
+export { TradingComponent } from '../../trading.component';
