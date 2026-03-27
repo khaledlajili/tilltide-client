@@ -1,0 +1,1 @@
+export { CategoryFacade } from '../category.facade';

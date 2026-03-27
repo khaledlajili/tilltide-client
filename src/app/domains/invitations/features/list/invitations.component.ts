@@ -1,0 +1,1 @@
+export { InvitationsComponent } from '../../invitations.component';

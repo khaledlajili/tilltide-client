@@ -1,0 +1,1 @@
+export { PinComponent } from '../../pin/pin.component';

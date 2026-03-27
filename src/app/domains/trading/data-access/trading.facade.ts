@@ -1,0 +1,1 @@
+export { TradingFacade } from '../trading.facade';

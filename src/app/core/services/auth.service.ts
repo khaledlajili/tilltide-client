@@ -1,7 +1,6 @@
 import { inject, Injectable, signal } from '@angular/core';
 import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
-import { tap } from 'rxjs/operators';
-import { firstValueFrom } from 'rxjs';
+import { firstValueFrom, switchMap } from 'rxjs';
 import { Router } from '@angular/router';
 import { environment } from '@/environments/environment';
 import { LoginResponse, UserCredentials } from '@/app/core/models/user.model';
@@ -39,7 +38,7 @@ export class AuthService {
 
     login(credentials: UserCredentials) {
         return this.http.post<LoginResponse>(`${environment.apiUrl}/user/login`, credentials).pipe(
-            tap(async (res) => {
+            switchMap(async (res) => {
                 localStorage.setItem('token', res.accessToken);
                 localStorage.setItem('storeId', res.storeId);
 
@@ -60,6 +59,7 @@ export class AuthService {
 
                 this.isTerminalRegistered.set(true);
                 this.currentStoreId.set(res.storeId);
+                return res;
             })
         );
     }
