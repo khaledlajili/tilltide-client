@@ -8,55 +8,62 @@ import { ButtonModule } from 'primeng/button';
 @Component({
     selector: 'app-employee-form',
     standalone: true,
-    imports: [CommonModule, ReactiveFormsModule, DialogModule, InputTextModule, ButtonModule],
+    imports: [
+        CommonModule,
+        ReactiveFormsModule,
+        DialogModule,
+        InputTextModule,
+        ButtonModule
+    ],
     template: `
-<p-dialog [(visible)]="visible" header="Add Employee" [modal]="true" (onHide)="close()">
-    <form [formGroup]="form" class="flex flex-col gap-4">
-        <div>
-            <label class="block mb-2">Name</label>
-            <input pInputText formControlName="name" class="w-full" />
-        </div>
-        <div>
-            <label class="block mb-2">PIN</label>
-            <input pInputText type="password" maxlength="4" formControlName="pin" class="w-full" />
-        </div>
-        <div>
-            <label class="block mb-2">Confirm PIN</label>
-            <input pInputText type="password" maxlength="4" formControlName="confirmPin" class="w-full" />
-        </div>
-    </form>
+        <p-dialog
+            [(visible)]="visible"
+            header="Add Employee"
+            [modal]="true"
+            (onHide)="close()">
 
-    <ng-template #footer>
-        <p-button label="Cancel" [text]="true" (onClick)="close()"></p-button>
-        <p-button label="Save" [disabled]="form.invalid || pinMismatch" (onClick)="submit()"></p-button>
-    </ng-template>
-</p-dialog>
-`
+            <form [formGroup]="form" class="flex flex-col gap-4">
+                <div>
+                    <label class="block mb-2">Name</label>
+                    <input pInputText formControlName="name" class="w-full" />
+                </div>
+            </form>
+
+            <ng-template #footer>
+                <p-button
+                    label="Cancel"
+                    [text]="true"
+                    (onClick)="close()">
+                </p-button>
+
+                <p-button
+                    label="Save"
+                    [disabled]="form.invalid"
+                    (onClick)="submit()">
+                </p-button>
+            </ng-template>
+        </p-dialog>
+    `
 })
 export class EmployeeFormComponent {
 
     @Input() visible = false;
     @Output() visibleChange = new EventEmitter<boolean>();
-    @Output() save = new EventEmitter<{ name: string; pin: string }>();
+    @Output() save = new EventEmitter<{ name: string }>();
 
     private fb = inject(FormBuilder);
 
     form = this.fb.group({
-        name: ['', Validators.required],
-        pin: ['', [Validators.required, Validators.pattern(/^\d{4}$/)]],
-        confirmPin: ['', [Validators.required, Validators.pattern(/^\d{4}$/)]]
+        name: ['', Validators.required]
     });
 
-    get pinMismatch(): boolean {
-        const pin = this.form.get('pin')?.value;
-        const confirmPin = this.form.get('confirmPin')?.value;
-        return !!pin && !!confirmPin && pin !== confirmPin;
-    }
-
     submit(): void {
-        if (this.form.invalid) return;
-        const { name, pin } = this.form.value as { name: string; pin: string };
-        this.save.emit({ name, pin });
+        if (this.form.invalid) {
+            return;
+        }
+
+        const { name } = this.form.value as { name: string };
+        this.save.emit({ name });
     }
 
     close(): void {
