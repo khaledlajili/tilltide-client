@@ -6,8 +6,8 @@ export interface TerminalConfig {
     iv: Uint8Array;
     salt: Uint8Array;
     deviceSecret: string;
-    terminalPublicKey: CryptoKey;
-    terminalPrivateKey: CryptoKey; // Stored as non-exportable object
+    terminalPublicKey?: CryptoKey;
+    terminalPrivateKey?: CryptoKey; // Stored as non-exportable object
     terminalId?: string;
     workspaceId?: string;
 }

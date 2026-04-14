@@ -1,5 +1,5 @@
 import { inject, Injectable, signal } from '@angular/core';
-import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
+import { HttpClient, HttpErrorResponse, HttpHeaders, HttpParams } from '@angular/common/http';
 import { firstValueFrom, switchMap } from 'rxjs';
 import { Router } from '@angular/router';
 import { environment } from '@/environments/environment';
@@ -9,6 +9,7 @@ import { db } from '@/app/core/db/pos-db';
 import { TerminalCryptoService } from '@/app/core/security/terminal-crypto.service';
 import { authConfig } from '@/app/core/config/auth.config';
 import { EmployeeCacheService } from '@/app/core/services/employee-cache.service';
+import { TerminalStorageService } from '@/app/core/security/terminal-storage.service';
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
@@ -17,6 +18,7 @@ export class AuthService {
     private http = inject(HttpClient);
     private router = inject(Router);
     private employeeCache = inject(EmployeeCacheService);
+    private terminalStorage = inject(TerminalStorageService);
 
     // Signals
     currentStoreId = signal<string | null>(localStorage.getItem('storeId'));
@@ -245,9 +247,20 @@ export class AuthService {
             'DPoP': dpop
         });
 
-        const response = await firstValueFrom(
-            this.http.post<{ access_token: string; token_type: string }>(tokenUrl, params.toString(), { headers })
-        );
+        let response: { access_token: string; token_type: string };
+
+        try {
+            response = await firstValueFrom(
+                this.http.post<{ access_token: string; token_type: string }>(tokenUrl, params.toString(), { headers })
+            );
+        } catch (error) {
+            if (this.isDpopKeyMismatch(error)) {
+                await this.terminalStorage.clearTerminalIdentity();
+                this.isTerminalRegistered.set(false);
+                throw new Error('Terminal key mismatch detected. Re-register this terminal from Terminal settings.');
+            }
+            throw error;
+        }
 
         if (!response?.access_token) {
             throw new Error('Terminal authentication failed');
@@ -259,6 +272,15 @@ export class AuthService {
         } else {
             localStorage.removeItem('terminal_employee_id');
         }
+    }
+
+    private isDpopKeyMismatch(error: unknown): boolean {
+        if (!(error instanceof HttpErrorResponse)) {
+            return false;
+        }
+
+        const description = String(error.error?.error_description ?? '');
+        return error.status === 400 && description.includes('DPoP key does not match the registered terminal key');
     }
 
     getToken(): string | null { return localStorage.getItem('token'); }

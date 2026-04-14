@@ -12,10 +12,26 @@ export class TerminalStorageService {
             iv: existing?.iv ?? new Uint8Array(),
             salt: existing?.salt ?? new Uint8Array(),
             deviceSecret: existing?.deviceSecret ?? '',
-            terminalPublicKey: existing?.terminalPublicKey ?? (data.terminalPublicKey as CryptoKey),
-            terminalPrivateKey: existing?.terminalPrivateKey ?? (data.terminalPrivateKey as CryptoKey),
+            // Always persist freshly provided key material when present.
+            terminalPublicKey: (data.terminalPublicKey as CryptoKey) ?? existing?.terminalPublicKey,
+            terminalPrivateKey: (data.terminalPrivateKey as CryptoKey) ?? existing?.terminalPrivateKey,
             terminalId: data.terminalId ?? existing?.terminalId,
             workspaceId: data.workspaceId ?? existing?.workspaceId
+        });
+    }
+
+    async clearTerminalIdentity() {
+        const existing = await db.security.get('active_config');
+        if (!existing) {
+            return;
+        }
+
+        await db.security.put({
+            ...existing,
+            id: 'active_config',
+            terminalId: undefined,
+            terminalPublicKey: undefined,
+            terminalPrivateKey: undefined
         });
     }
 
