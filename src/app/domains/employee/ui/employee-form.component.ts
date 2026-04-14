@@ -23,10 +23,24 @@ import { ButtonModule } from 'primeng/button';
             (onHide)="close()">
 
             <form [formGroup]="form" class="flex flex-col gap-4">
+
                 <div>
                     <label class="block mb-2">Name</label>
-                    <input pInputText formControlName="name" class="w-full" />
+                    <input
+                        pInputText
+                        formControlName="name"
+                        class="w-full" />
                 </div>
+
+                <div>
+                    <label class="block mb-2">PIN</label>
+                    <input
+                        pInputText
+                        type="password"
+                        formControlName="pin"
+                        class="w-full" />
+                </div>
+
             </form>
 
             <ng-template #footer>
@@ -42,6 +56,7 @@ import { ButtonModule } from 'primeng/button';
                     (onClick)="submit()">
                 </p-button>
             </ng-template>
+
         </p-dialog>
     `
 })
@@ -49,21 +64,27 @@ export class EmployeeFormComponent {
 
     @Input() visible = false;
     @Output() visibleChange = new EventEmitter<boolean>();
-    @Output() save = new EventEmitter<{ name: string }>();
+
+    // ✅ FIXED OUTPUT TYPE
+    @Output() save = new EventEmitter<{ name: string; pin: string }>();
 
     private fb = inject(FormBuilder);
 
     form = this.fb.group({
-        name: ['', Validators.required]
+        name: ['', Validators.required],
+        pin: ['', Validators.required]
     });
 
     submit(): void {
-        if (this.form.invalid) {
-            return;
-        }
+        if (this.form.invalid) return;
 
-        const { name } = this.form.value as { name: string };
-        this.save.emit({ name });
+        const { name, pin } = this.form.value as {
+            name: string;
+            pin: string;
+        };
+
+        // ✅ emit full DTO
+        this.save.emit({ name, pin });
     }
 
     close(): void {

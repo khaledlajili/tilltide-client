@@ -5,47 +5,60 @@ import { ButtonModule } from 'primeng/button';
 import { ToolbarModule } from 'primeng/toolbar';
 import { ToastModule } from 'primeng/toast';
 import { MessageService } from 'primeng/api';
+
 import { EmployeeFacade } from '../data-access/employee.facade';
 import { EmployeeFormComponent } from './employee-form.component';
 
 @Component({
     selector: 'app-employee',
     standalone: true,
-    imports: [CommonModule, TableModule, ButtonModule, ToolbarModule, ToastModule, EmployeeFormComponent],
+    imports: [
+        CommonModule,
+        TableModule,
+        ButtonModule,
+        ToolbarModule,
+        ToastModule,
+        EmployeeFormComponent
+    ],
     providers: [MessageService],
     template: `
-<p-toast></p-toast>
+        <p-toast></p-toast>
 
-<div class="card">
-    <p-toolbar class="mb-4">
-        <ng-template #start>
-            <p-button label="Add Employee" icon="pi pi-plus" (onClick)="openNew()"></p-button>
-        </ng-template>
-    </p-toolbar>
+        <div class="card">
+            <p-toolbar class="mb-4">
+                <ng-template #start>
+                    <p-button
+                        label="Add Employee"
+                        icon="pi pi-plus"
+                        (onClick)="openNew()">
+                    </p-button>
+                </ng-template>
+            </p-toolbar>
 
-    <p-table [value]="employees()" [loading]="loading()">
-        <ng-template #header>
-            <tr>
-                <th>Name</th>
-                <th>Status</th>
-                <th>Created</th>
-            </tr>
-        </ng-template>
-        <ng-template #body let-employee>
-            <tr>
-                <td>{{ employee.name }}</td>
-                <td>{{ employee.status }}</td>
-                <td>{{ employee.createdAt }}</td>
-            </tr>
-        </ng-template>
-    </p-table>
-</div>
+            <p-table [value]="employees()" [loading]="loading()">
+                <ng-template #header>
+                    <tr>
+                        <th>Name</th>
+                        <th>Status</th>
+                        <th>Created</th>
+                    </tr>
+                </ng-template>
 
-<app-employee-form
-    [(visible)]="dialog"
-    (save)="register($event)">
-</app-employee-form>
-`
+                <ng-template #body let-employee>
+                    <tr>
+                        <td>{{ employee.name }}</td>
+                        <td>{{ employee.status }}</td>
+                        <td>{{ employee.createdAt }}</td>
+                    </tr>
+                </ng-template>
+            </p-table>
+        </div>
+
+        <app-employee-form
+            [(visible)]="dialog"
+            (save)="register($event)">
+        </app-employee-form>
+    `
 })
 export class EmployeeComponent implements OnInit {
 
@@ -69,10 +82,18 @@ export class EmployeeComponent implements OnInit {
         this.facade.create(data.name, data.pin).subscribe({
             next: () => {
                 this.dialog = false;
-                this.message.add({ severity: 'success', summary: 'Employee Created' });
+
+                this.message.add({
+                    severity: 'success',
+                    summary: 'Employee Created'
+                });
             },
             error: (error: unknown) => {
-                const detail = error instanceof Error ? error.message : 'Unable to enroll the employee PIN vault.';
+                const detail =
+                    error instanceof Error
+                        ? error.message
+                        : 'Unable to enroll the employee PIN vault.';
+
                 this.message.add({
                     severity: 'error',
                     summary: 'Employee Registration Failed',
