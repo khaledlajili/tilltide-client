@@ -20,7 +20,7 @@ export class TerminalStorageService {
         });
     }
 
-    async clearTerminalIdentity() {
+    async clearTerminalKeys() {
         const existing = await db.security.get('active_config');
         if (!existing) {
             return;
@@ -29,7 +29,6 @@ export class TerminalStorageService {
         await db.security.put({
             ...existing,
             id: 'active_config',
-            terminalId: undefined,
             terminalPublicKey: undefined,
             terminalPrivateKey: undefined
         });

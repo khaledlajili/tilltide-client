@@ -255,9 +255,8 @@ export class AuthService {
             );
         } catch (error) {
             if (this.isDpopKeyMismatch(error)) {
-                await this.terminalStorage.clearTerminalIdentity();
-                this.isTerminalRegistered.set(false);
-                throw new Error('Terminal key mismatch detected. Re-register this terminal from Terminal settings.');
+                await this.terminalStorage.clearTerminalKeys();
+                throw new Error('Terminal key mismatch detected. Re-register this device to refresh its key pair.');
             }
             throw error;
         }

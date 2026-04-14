@@ -74,9 +74,18 @@ export class TerminalComponent implements OnInit {
     }
 
     register(data: any): void {
-        this.facade.register(data.label).subscribe(() => {
-            this.dialog = false;
-            this.message.add({ severity: 'success', summary: 'Terminal Registered' });
+        this.facade.register(data.label).subscribe({
+            next: () => {
+                this.dialog = false;
+                this.message.add({ severity: 'success', summary: 'Terminal Registered' });
+            },
+            error: (error) => {
+                this.message.add({
+                    severity: 'warn',
+                    summary: 'Terminal Registration Blocked',
+                    detail: error?.message ?? 'This device is already registered.'
+                });
+            }
         });
     }
 

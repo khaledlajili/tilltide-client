@@ -8,6 +8,7 @@ export interface Terminal {
 }
 
 export interface RegisterTerminalRequest {
+    terminalId?: string;
     workspaceId: string;
     label: string;
     publicKey: JsonWebKey;

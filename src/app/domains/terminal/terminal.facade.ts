@@ -33,9 +33,16 @@ export class TerminalFacade {
                 if (!workspaceId) {
                     throw new Error('Missing workspace context');
                 }
+                const context = await this.storage.loadTerminalContext();
+
+                if (context?.terminalId && context?.terminalPublicKey && context?.terminalPrivateKey) {
+                    throw new Error('This device is already registered. Revoke it first to register again.');
+                }
+
                 const publicKey = await this.crypto.exportPublicKey(keyPair.publicKey);
 
                 const request: RegisterTerminalRequest = {
+                    terminalId: context?.terminalId,
                     workspaceId,
                     label,
                     publicKey
